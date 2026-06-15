@@ -66,6 +66,7 @@ export default function App({ initialUser, initialStore }) {
       setStore(EMPTY)
       setScreen("auth")
     },
+    setAvatar: (url) => setStore((s) => ({ ...s, user: { ...s.user, photo_url: url } })),
     wrongIdList: () => store.wrong.map((id) => QData.question(id)).filter(Boolean),
     bestStreak: () => Math.max(store.bestStreak, streak),
     ttBest: store.ttBest,
@@ -207,7 +208,7 @@ export default function App({ initialUser, initialStore }) {
         {isMobile && screen !== "quiz" && (
           <div className="mobile-top">
             <div style={{ display: "flex", alignItems: "center", gap: 9 }}><Logo size={26} /><span style={{ fontWeight: 600, fontSize: 15 }}>{titleOf[screen]}</span></div>
-            <div className="avatar" style={{ width: 28, height: 28, fontSize: 12, overflow: "hidden" }} onClick={() => nav("profile")}>{store.user?.photo_url ? <img src={store.user.photo_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : (store.user?.name || "U").slice(0, 1).toUpperCase()}</div>
+            <div className="avatar" style={{ width: 30, height: 30, flex: "0 0 30px", fontSize: 12, overflow: "hidden", cursor: "pointer" }} onClick={() => nav("profile")}>{store.user?.photo_url ? <img src={store.user.photo_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : (store.user?.name || "U").slice(0, 1).toUpperCase()}</div>
           </div>
         )}
         {!isMobile && screen !== "quiz" && (

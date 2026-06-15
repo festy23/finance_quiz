@@ -11,6 +11,7 @@ export const Ico = ({d, size=18, fill=false, sw=1.8, children, ...p}) => (
 );
 export const I = {
   home:   (p)=><Ico {...p}><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></Ico>,
+  camera: (p)=><Ico {...p}><path d="M3 8a2 2 0 012-2h2l1.5-2h7L18 6h2a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/><circle cx="12" cy="12.5" r="3.2"/></Ico>,
   play:   (p)=><Ico {...p}><polygon points="6 4 19 12 6 20 6 4"/></Ico>,
   exam:   (p)=><Ico {...p}><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h5"/></Ico>,
   bolt:   (p)=><Ico {...p}><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></Ico>,

@@ -28,16 +28,17 @@ export default async function handler(req, res) {
   if (!u) return res.status(401).json({ error: 'unauthorized' })
   const uid = u.id
 
-  const [attempts, qstatsRows, wrongRows, dayRows, metaRows] = await Promise.all([
+  const [attempts, qstatsRows, wrongRows, dayRows, metaRows, userRows] = await Promise.all([
     sql`select id, mode, topic, score, total, qids, answers, spark, created_at from attempts where user_id = ${uid} order by created_at desc limit 60`,
     sql`select question_id, seen, correct from qstats where user_id = ${uid}`,
     sql`select question_id from wrong where user_id = ${uid}`,
     sql`select day, answered from days where user_id = ${uid}`,
     sql`select best_streak, tt_best from user_meta where user_id = ${uid}`,
+    sql`select avatar_url from users where id = ${uid}`,
   ])
 
   res.json(buildStore({
-    user: { id: u.id, name: u.name, photo_url: u.photo_url },
+    user: { id: u.id, name: u.name, photo_url: userRows[0]?.avatar_url || u.photo_url },
     attempts, qstatsRows, wrongRows, dayRows, meta: metaRows[0] || {},
   }))
 }

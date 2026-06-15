@@ -15,4 +15,5 @@ export const api = {
   progress: () => fetch('/api/progress').then(json),
   saveAttempt: (attempt) => post('/api/attempts', attempt).then(json),
   saveTradeResult: (score) => post('/api/tradetest-result', { score }).then(json),
+  uploadAvatar: (dataUrl) => post('/api/avatar', { dataUrl }).then(json),
 }

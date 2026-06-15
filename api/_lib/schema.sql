@@ -5,8 +5,11 @@ create table if not exists users (
   first_name  text,
   last_name   text,
   photo_url   text,
+  avatar_url  text,
   created_at  timestamptz not null default now()
 );
+
+alter table users add column if not exists avatar_url text;
 
 create table if not exists attempts (
   id         text primary key,
