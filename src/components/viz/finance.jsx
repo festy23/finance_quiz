@@ -78,7 +78,7 @@ function Liquidity() {
         </div>
         {assets.map((x, i) => (
           <button key={i} onClick={() => setSel(i)} title={x.n} style={{
-            position: "absolute", top: 19, left: `calc(${100 - x.liq}% - 8px)`,
+            position: "absolute", top: 19, left: `calc(${x.liq}% - 8px)`,
             width: i === sel ? 18 : 13, height: i === sel ? 18 : 13, borderRadius: "50%",
             background: i === sel ? "var(--ac)" : "var(--panel)", border: `2px solid ${i === sel ? "#fff" : "var(--border-strong)"}`,
             transition: ".15s", cursor: "pointer", boxShadow: i === sel ? "0 2px 10px rgba(41,98,255,.6)" : "none",
@@ -178,15 +178,21 @@ function CashFlow() {
   const start = 50;
   const net = op + inv + fin;
   const end = start + net;
-  const steps = [
-    { l: "Начало", v: start, abs: start, c: "var(--tx-3)" },
-    { l: "Операц.", v: op, c: "var(--ok)" },
-    { l: "Инвест.", v: inv, c: "var(--ac)" },
-    { l: "Финанс.", v: fin, c: "var(--purple)" },
-    { l: "Конец", v: end, abs: end, c: end >= start ? "var(--ok)" : "var(--down)" },
+  const cum = [start, start + op, start + op + inv, end];
+  const bars = [
+    { l: "Начало", from: 0, to: start, v: start, c: "var(--tx-3)", total: true },
+    { l: "Операц.", from: cum[0], to: cum[1], v: op, c: "var(--ok)" },
+    { l: "Инвест.", from: cum[1], to: cum[2], v: inv, c: "var(--ac)" },
+    { l: "Финанс.", from: cum[2], to: cum[3], v: fin, c: "var(--purple)" },
+    { l: "Конец", from: 0, to: end, v: end, c: end >= start ? "var(--ok)" : "var(--down)", total: true },
   ];
-  const mx = Math.max(start, end, Math.abs(op), 120) * 1.2;
-  let run = 0;
+  // домен учитывает 0, итоги и ВСЕ промежуточные суммы → бары всегда внутри
+  const domVals = [0, start, end, ...cum];
+  let domLo = Math.min(...domVals), domHi = Math.max(...domVals);
+  const span = (domHi - domLo) || 100; domHi += span * 0.14; domLo -= span * 0.06;
+  const SW = 320, SH = 150, padT = 16, padB = 22, padX = 6;
+  const yFor = (v) => padT + ((domHi - v) / (domHi - domLo)) * (SH - padT - padB);
+  const colW = (SW - padX * 2) / bars.length;
   return (
     <VizFrame title="Отчёт о движении денег (ОДДС)"
       controls={<>
@@ -194,23 +200,21 @@ function CashFlow() {
         <VSlider label="Инвестиционная деятельность" value={inv} min={-200} max={100} step={10} onChange={setInv} fmt={money} accent="var(--ac)" />
         <VSlider label="Финансовая деятельность" value={fin} min={-150} max={150} step={10} onChange={setFin} fmt={money} accent="var(--purple)" />
       </>}>
-      <div style={{ display: "flex", alignItems: "flex-end", gap: 8, height: 160 }}>
-        {steps.map((s, i) => {
-          const isTotal = s.abs !== undefined;
-          const base = isTotal ? 0 : run;
-          if (!isTotal) run += s.v;
-          const h = (Math.abs(isTotal ? s.abs : s.v) / mx) * 100;
-          const bottom = isTotal ? 0 : (s.v >= 0 ? base - Math.max(s.v, 0) + s.v : base) ;
+      <svg viewBox={`0 0 ${SW} ${SH}`} width="100%" style={{ display: "block" }}>
+        <line x1={padX} y1={yFor(0)} x2={SW - padX} y2={yFor(0)} stroke="var(--border-strong)" strokeWidth="1" />
+        {bars.map((b, i) => {
+          const x = padX + i * colW + colW * 0.2, w = colW * 0.6;
+          const yT = Math.min(yFor(b.from), yFor(b.to));
+          const h = Math.max(Math.abs(yFor(b.from) - yFor(b.to)), 3);
           return (
-            <div key={i} style={{ flex: 1, height: "100%", display: "flex", flexDirection: "column", justifyContent: "flex-end", alignItems: "center", gap: 6, position: "relative" }}>
-              <span className="mono" style={{ fontSize: 11, color: s.c, fontWeight: 600 }}>{s.v >= 0 || isTotal ? "" : "−"}{money(Math.abs(s.v))}</span>
-              <div style={{ width: "70%", maxWidth: 40, height: `${h}%`, minHeight: 4, background: s.c, opacity: isTotal ? 1 : .85,
-                borderRadius: 5, marginBottom: isTotal ? 0 : `${(Math.min(base, base + s.v) / mx) * 100}%`, transition: ".4s" }} />
-              <span style={{ fontSize: 10, color: "var(--tx-3)" }}>{s.l}</span>
-            </div>
+            <g key={i}>
+              <rect x={x} y={yT} width={w} height={h} rx="3" fill={b.c} opacity={b.total ? 1 : 0.9} />
+              <text x={x + w / 2} y={yT - 5} fontSize="10" fontWeight="600" fill={b.c} textAnchor="middle" fontFamily="var(--fm)">{b.total ? "" : b.v < 0 ? "−" : "+"}{money(Math.abs(b.v))}</text>
+              <text x={x + w / 2} y={SH - 7} fontSize="9.5" fill="var(--tx-3)" textAnchor="middle">{b.l}</text>
+            </g>
           );
         })}
-      </div>
+      </svg>
       <div style={{ textAlign: "center", fontSize: 12.5, color: "var(--tx-2)" }}>
         Чистый поток <b className="mono" style={{ color: net >= 0 ? "var(--ok)" : "var(--down)" }}>{net >= 0 ? "+" : "−"}{money(Math.abs(net))}</b> · смысл: прибыль есть, а денег может не быть
       </div>
@@ -339,6 +343,8 @@ function ValueGrowth() {
   const pvG0 = growth.reduce((a, f, i) => a + f / Math.pow(1.03, i + 1), 0);
   const pvV0 = value.reduce((a, f, i) => a + f / Math.pow(1.03, i + 1), 0);
   const dropG = ((pvG - pvG0) / pvG0) * 100, dropV = ((pvV - pvV0) / pvV0) * 100;
+  // общий максимум PV по обоим рядам — чтобы столбцы не вылезали при низкой ставке
+  const maxPv = Math.max(...growth.map((f, i) => f / Math.pow(1 + r, i + 1)), ...value.map((f, i) => f / Math.pow(1 + r, i + 1)), 1);
   return (
     <VizFrame title="Акции роста vs стоимости при росте ставок"
       controls={<VSlider label="Ставка дисконтирования" value={rate} min={3} max={16} step={0.5} onChange={setRate} fmt={(v) => v + "%"} accent="var(--ac)" />}>
@@ -349,7 +355,7 @@ function ValueGrowth() {
             <div style={{ display: "flex", alignItems: "flex-end", gap: 4, height: 70 }}>
               {s.arr.map((f, i) => {
                 const pvi = f / Math.pow(1 + r, i + 1);
-                return <div key={i} title={`Год ${i + 1}: PV ${pvi.toFixed(0)}`} style={{ flex: 1, height: `${(pvi / 30) * 100}%`, minHeight: 3, background: s.c, opacity: .4 + i * .12, borderRadius: "3px 3px 0 0", transition: ".4s" }} />;
+                return <div key={i} title={`Год ${i + 1}: PV ${pvi.toFixed(0)}`} style={{ flex: 1, height: `${Math.min((pvi / maxPv) * 100, 100)}%`, minHeight: 3, background: s.c, opacity: .4 + i * .12, borderRadius: "3px 3px 0 0", transition: ".4s" }} />;
               })}
             </div>
             <div className="mono" style={{ fontSize: 18, fontWeight: 600, color: s.c, marginTop: 10 }}>{s.pv.toFixed(0)}</div>
