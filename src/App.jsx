@@ -40,7 +40,6 @@ export default function App({ initialUser, initialStore }) {
   const [quiz, setQuiz] = uS(null);
   const [lastResult, setLastResult] = uS(null);
   const [learnTopic, setLearnTopic] = uS(null);
-  const [device, setDevice] = uS("desktop");
   const [moreOpen, setMoreOpen] = uS(false);
   const [winW, setWinW] = uS(window.innerWidth);
   uE(() => { const f = () => setWinW(window.innerWidth); window.addEventListener("resize", f); return () => window.removeEventListener("resize", f); }, []);
@@ -53,7 +52,7 @@ export default function App({ initialUser, initialStore }) {
   const nav = (sc) => { setScreen(sc); setMoreOpen(false); document.querySelector(".content,.main")?.scrollTo?.(0, 0); };
   const ctx = {
     user: store.user, attempts: store.attempts, stats, streak, quiz, lastResult, learnTopic,
-    isMobile: device === "mobile" || winW < 760,
+    isMobile: winW < 760,
     nav,
     login: async (tgUser) => {
       const { user } = await api.telegramLogin(tgUser)
@@ -138,8 +137,7 @@ export default function App({ initialUser, initialStore }) {
     height: "100%",
   };
 
-  const isMobile = device === "mobile" || winW < 760;
-  const phoneFrame = device === "mobile" && winW >= 760;
+  const isMobile = winW < 760;
 
   const NAVMAP = {
     dashboard: { label: "Главная", icon: "home" },
@@ -178,7 +176,7 @@ export default function App({ initialUser, initialStore }) {
 
   /* ----- AUTH full-screen (no shell) ----- */
   if (screen === "auth") {
-    return <div style={{ ...themeVars }}><Auth onLogin={ctx.login} /><DeviceToggle device={device} setDevice={setDevice} />{tweakPanel(t, setTweak)}</div>;
+    return <div style={{ ...themeVars }}><Auth onLogin={ctx.login} />{tweakPanel(t, setTweak)}</div>;
   }
 
   const shell = (
@@ -226,7 +224,7 @@ export default function App({ initialUser, initialStore }) {
 
   return (
     <>
-      {phoneFrame ? <PhoneFrame>{shell}</PhoneFrame> : shell}
+      {shell}
       {moreOpen && (
         <div onClick={() => setMoreOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 8000, background: "rgba(0,0,0,.5)", backdropFilter: "blur(3px)", display: "flex", alignItems: "flex-end" }}>
           <div onClick={(e) => e.stopPropagation()} style={{ width: "100%", background: "#13151b", borderTop: "1px solid var(--border)", borderRadius: "18px 18px 0 0", padding: "10px 12px calc(18px + env(safe-area-inset-bottom))", boxShadow: "0 -20px 60px rgba(0,0,0,.6)" }}>
@@ -239,33 +237,8 @@ export default function App({ initialUser, initialStore }) {
           </div>
         </div>
       )}
-      <DeviceToggle device={device} setDevice={setDevice} />
       {tweakPanel(t, setTweak)}
     </>
-  );
-}
-
-function PhoneFrame({ children }) {
-  return (
-    <div style={{ height: "100vh", display: "grid", placeItems: "center", background: "radial-gradient(800px 600px at 50% 20%, #161616, #0a0a0a)" }}>
-      <div style={{ width: 402, height: "min(872px, 94vh)", borderRadius: 46, padding: 11, background: "linear-gradient(160deg,#2a2a2e,#0e0e10)", boxShadow: "0 40px 90px rgba(0,0,0,.7), inset 0 0 0 1px rgba(255,255,255,.06)" }}>
-        <div style={{ width: "100%", height: "100%", borderRadius: 36, overflow: "hidden", position: "relative", background: "var(--bg)" }}>
-          <div style={{ position: "absolute", top: 9, left: "50%", transform: "translateX(-50%)", width: 110, height: 26, background: "#000", borderRadius: 16, zIndex: 100 }} />
-          {children}
-        </div>
-      </div>
-    </div>
-  );
-}
-function DeviceToggle({ device, setDevice }) {
-  return (
-    <div style={{ position: "fixed", left: 16, bottom: 16, zIndex: 9000, display: "flex", gap: 4, background: "rgba(20,20,22,.92)", border: "1px solid var(--border)", borderRadius: 10, padding: 4, backdropFilter: "blur(10px)" }}>
-      {[["desktop", "Desktop"], ["mobile", "Mobile"]].map(([k, lbl]) => (
-        <button key={k} onClick={() => setDevice(k)} className="chip" style={{ height: 30, padding: "0 11px", gap: 6, cursor: "pointer", background: device === k ? "var(--ac)" : "transparent", color: device === k ? "#fff" : "var(--tx-2)" }}>
-          {k === "desktop" ? I.desktop({ size: 14 }) : I.mobile({ size: 14 })}{lbl}
-        </button>
-      ))}
-    </div>
   );
 }
 
