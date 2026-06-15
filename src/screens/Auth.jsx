@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Logo } from '../components/ui.jsx'
 import { TVChart, anchorsToCloses, genCandles } from '../components/charts.jsx'
 
@@ -7,9 +7,22 @@ const BOT = import.meta.env.VITE_TELEGRAM_BOT_USERNAME
 // Telegram вызывает window.onTelegramAuth(user) после успешного входа в виджете.
 export default function Auth({ onLogin }) {
   const slot = useRef(null)
+  const [error, setError] = useState(null)
+  const [busy, setBusy] = useState(false)
 
   useEffect(() => {
-    window.onTelegramAuth = (user) => onLogin(user)
+    // onLogin (ctx.login) бросает исключение при сбое — ловим и показываем ошибку.
+    window.onTelegramAuth = async (user) => {
+      setError(null)
+      setBusy(true)
+      try {
+        await onLogin(user)
+      } catch {
+        setError('Не удалось войти. Проверьте соединение и попробуйте ещё раз.')
+      } finally {
+        setBusy(false)
+      }
+    }
     const s = document.createElement('script')
     s.src = 'https://telegram.org/js/telegram-widget.js?22'
     s.async = true
@@ -42,7 +55,9 @@ export default function Auth({ onLogin }) {
         <p style={{ fontSize: 13, color: 'var(--tx-3)', marginTop: 0, lineHeight: 1.5 }}>
           Авторизация и сохранение прогресса — только через Telegram. Нажмите кнопку ниже.
         </p>
-        <div ref={slot} style={{ marginTop: 22, minHeight: 48, display: 'flex', justifyContent: 'center' }} />
+        <div ref={slot} style={{ marginTop: 22, minHeight: 48, display: 'flex', justifyContent: 'center', opacity: busy ? 0.5 : 1, pointerEvents: busy ? 'none' : 'auto' }} />
+        {busy && <p style={{ fontSize: 12, color: 'var(--tx-3)', textAlign: 'center', marginTop: 12, marginBottom: 0 }}>Входим…</p>}
+        {error && <p style={{ fontSize: 12.5, color: 'var(--down, #ef5350)', textAlign: 'center', marginTop: 12, marginBottom: 0, lineHeight: 1.45 }}>{error}</p>}
         <p style={{ fontSize: 11, color: 'var(--tx-3)', textAlign: 'center', marginTop: 18, marginBottom: 0, lineHeight: 1.5 }}>
           Мы получаем только ваш Telegram-профиль (имя и фото). Пароль не требуется.
         </p>

@@ -10,10 +10,25 @@ async function boot() {
   const content = await api.content()
   initContent(content)
   const me = await api.me() // { user } или null
-  const progress = me ? await api.progress() : null
+  // Прогресс не должен ронять загрузку: при сбое входим как есть (на экран авторизации).
+  let progress = null
+  if (me) {
+    try { progress = await api.progress() } catch { progress = null }
+  }
   ReactDOM.createRoot(document.getElementById('root')).render(
     <App initialUser={me?.user || null} initialStore={progress} />
   )
 }
 
-boot()
+function fatal(message) {
+  const root = document.getElementById('root')
+  if (root) {
+    root.innerHTML =
+      '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;' +
+      'font-family:system-ui,sans-serif;color:#c9d1e0;background:#0b0d12;text-align:center;line-height:1.5">' +
+      '<div><div style="font-size:16px;font-weight:600;margin-bottom:8px">Не удалось загрузить приложение</div>' +
+      '<div style="font-size:13px;opacity:.7">' + message + '</div></div></div>'
+  }
+}
+
+boot().catch(() => fatal('Проверьте соединение и обновите страницу.'))
