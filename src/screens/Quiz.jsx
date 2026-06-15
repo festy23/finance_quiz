@@ -24,7 +24,13 @@ export function QuizScreen({ ctx }) {
 
   const choose = (i) => {
     if (showReveal) return;
-    if (q.multi) { setSel((s) => s.includes(i) ? s.filter((x) => x !== i) : [...s, i]); }
+    if (q.multi) {
+      const ns = sel.includes(i) ? sel.filter((x) => x !== i) : [...sel, i];
+      setSel(ns);
+      // В экзамене (feedback="end") проверки по кнопке нет — сам набор вариантов и есть ответ,
+      // поэтому сразу пишем его в answers, иначе «Далее» остаётся заблокированной.
+      if (!instant) { setAnswers((a) => ({ ...a, [q.id]: ns })); }
+    }
     else {
       setSel([i]);
       if (instant) { commit([i]); }
