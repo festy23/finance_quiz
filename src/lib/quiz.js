@@ -23,6 +23,11 @@ export const QData = {
   },
 }
 
+// Возвращает копию вопроса с перестановкой _order для ВАРИАНТОВ ответа.
+// _order — порядок отображения исходных индексов; выбор переводится обратно
+// в исходный индекс, поэтому correct/answers/серверный счёт не меняются.
+export const withShuffledOptions = (q) => ({ ...q, _order: QData.shuffle(q.options.map((_, i) => i)) })
+
 export const dayKey = (d) => new Date(d).toISOString().slice(0, 10)
 
 export function computeStats(qstats) {

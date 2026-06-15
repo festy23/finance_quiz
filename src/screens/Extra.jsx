@@ -4,7 +4,7 @@ import { I, Btn, Chip, TopicChip, Pbar, Stat, Ring } from '../components/ui.jsx'
 import { TVChart, anchorsToCloses, genCandles, volFromCandles } from '../components/charts.jsx'
 import { SubPanel } from '../components/viz/chart.jsx'
 import { C } from '../lib/content.js'
-import { QData } from '../lib/quiz.js'
+import { QData, withShuffledOptions } from '../lib/quiz.js'
 import { Empty } from './LearnStats.jsx'
 
 /* ============ GLOSSARY ============ */
@@ -85,7 +85,7 @@ export function TradeTestScreen({ ctx }) {
   const [done, setDone] = useState(false);
   const mobile = ctx.isMobile;
 
-  const start = () => { setItems(QData.shuffle(C.tradetest)); setIdx(0); setSel(null); setScore(0); setDone(false); setPhase("run"); };
+  const start = () => { setItems(QData.shuffle(C.tradetest).map(withShuffledOptions)); setIdx(0); setSel(null); setScore(0); setDone(false); setPhase("run"); };
   const it = items[idx];
   const reveal = sel !== null;
   const correct = it && it.correct[0];
@@ -160,12 +160,13 @@ export function TradeTestScreen({ ctx }) {
           <h2 style={{ fontSize: mobile ? 18 : 20, lineHeight: 1.35, letterSpacing: "-.01em", margin: "0 0 18px", textWrap: "pretty" }}>{it.q}</h2>
           <TTChart spec={it} reveal={reveal} mobile={mobile} />
           <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "1fr 1fr", gap: 10, marginTop: 18 }}>
-            {it.options.map((opt, i) => {
+            {(it._order || it.options.map((_, k) => k)).map((oi, pos) => {
+              const opt = it.options[oi];
               let cls = "opt";
-              if (reveal) { if (i === correct) cls += " correct"; else if (i === sel) cls += " wrong"; else cls += " dim"; }
+              if (reveal) { if (oi === correct) cls += " correct"; else if (oi === sel) cls += " wrong"; else cls += " dim"; }
               return (
-                <button key={i} className={cls} onClick={() => choose(i)}>
-                  <span className="opt-key">{reveal && i === correct ? <I.check size={14} /> : reveal && i === sel ? <I.x size={14} /> : String.fromCharCode(65 + i)}</span>
+                <button key={oi} className={cls} onClick={() => choose(oi)}>
+                  <span className="opt-key">{reveal && oi === correct ? <I.check size={14} /> : reveal && oi === sel ? <I.x size={14} /> : String.fromCharCode(65 + pos)}</span>
                   <span className="opt-txt">{opt}</span>
                 </button>
               );

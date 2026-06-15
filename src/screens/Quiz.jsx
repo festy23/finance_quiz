@@ -66,16 +66,17 @@ export function QuizScreen({ ctx }) {
           <h2 style={{ fontSize: 21, lineHeight: 1.35, letterSpacing: "-.01em", margin: "0 0 22px", textWrap: "pretty" }}>{q.q}</h2>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            {q.options.map((opt, i) => {
-              const chosen = sel.includes(i);
-              const correct = q.correct.includes(i);
+            {(q._order || q.options.map((_, k) => k)).map((oi, pos) => {
+              const opt = q.options[oi];
+              const chosen = sel.includes(oi);
+              const correct = q.correct.includes(oi);
               let cls = "opt";
               if (showReveal || (!instant && answered && ctx.endReview)) {
                 if (correct) cls += " correct"; else if (chosen) cls += " wrong"; else cls += " dim";
               } else if (chosen) cls += " sel";
               return (
-                <button key={i} className={cls} onClick={() => choose(i)}>
-                  <span className="opt-key">{showReveal && correct ? <I.check size={14} /> : showReveal && chosen && !correct ? <I.x size={14} /> : String.fromCharCode(65 + i)}</span>
+                <button key={oi} className={cls} onClick={() => choose(oi)}>
+                  <span className="opt-key">{showReveal && correct ? <I.check size={14} /> : showReveal && chosen && !correct ? <I.x size={14} /> : String.fromCharCode(65 + pos)}</span>
                   <span className="opt-txt">{opt}</span>
                 </button>
               );
@@ -183,10 +184,11 @@ function ReviewItem({ q, ans, open }) {
       {show && (
         <div className="fade-in" style={{ padding: "0 16px 16px", display: "flex", flexDirection: "column", gap: 12 }}>
           <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
-            {q.options.map((opt, i) => {
-              const correct = q.correct.includes(i), chosen = (ans || []).includes(i);
+            {(q._order || q.options.map((_, k) => k)).map((oi, pos) => {
+              const opt = q.options[oi];
+              const correct = q.correct.includes(oi), chosen = (ans || []).includes(oi);
               let cls = "opt"; if (correct) cls += " correct"; else if (chosen) cls += " wrong"; else cls += " dim";
-              return <div key={i} className={cls} style={{ cursor: "default", padding: "10px 13px" }}><span className="opt-key">{String.fromCharCode(65 + i)}</span><span className="opt-txt" style={{ fontSize: 13.5 }}>{opt}</span></div>;
+              return <div key={oi} className={cls} style={{ cursor: "default", padding: "10px 13px" }}><span className="opt-key">{String.fromCharCode(65 + pos)}</span><span className="opt-txt" style={{ fontSize: 13.5 }}>{opt}</span></div>;
             })}
           </div>
           <div className="explain">{q.explain}</div>

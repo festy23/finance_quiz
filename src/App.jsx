@@ -2,7 +2,7 @@
 import React, { useState as uS, useEffect as uE, useMemo } from 'react'
 import { api } from './lib/api.js'
 import { C } from './lib/content.js'
-import { QData, computeStats, computeStreak, dayKey, isCorrect } from './lib/quiz.js'
+import { QData, computeStats, computeStreak, dayKey, isCorrect, withShuffledOptions } from './lib/quiz.js'
 import { useTweaks, TweaksPanel, TweakSection, TweakColor, TweakRadio, TweakToggle } from './components/tweaks.jsx'
 import { I, Logo, Btn } from './components/ui.jsx'
 import Auth from './screens/Auth.jsx'
@@ -79,9 +79,10 @@ export default function App({ initialUser, initialStore }) {
       let qs;
       if (mode === "repeat") { qs = ctx.wrongIdList(); if (!qs.length) qs = C.questions; qs = QData.shuffle(qs).slice(0, C.modes.repeat.count); }
       else { const pool = topic ? QData.byTopic(topic) : C.questions; const m = C.modes[mode]; qs = QData.shuffle(pool); if (m.count) qs = qs.slice(0, m.count); }
+      qs = qs.map(withShuffledOptions);
       setQuiz({ mode, topic, questions: qs }); nav("quiz");
     },
-    startRepeatFrom: (ids) => { const qs = QData.shuffle(ids.map((i) => QData.question(i)).filter(Boolean)); setQuiz({ mode: "repeat", topic: null, questions: qs }); nav("quiz"); },
+    startRepeatFrom: (ids) => { const qs = QData.shuffle(ids.map((i) => QData.question(i)).filter(Boolean)).map(withShuffledOptions); setQuiz({ mode: "repeat", topic: null, questions: qs }); nav("quiz"); },
     finishQuiz: (qz, answers) => {
       let score = 0; const perTopic = {}; const wrongQ = []; const qstats = { ...store.qstats }; const wrong = new Set(store.wrong);
       qz.questions.forEach((q) => {
