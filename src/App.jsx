@@ -1,0 +1,284 @@
+/* App.jsx — store, router, app shell (desktop sidebar / mobile tabbar), tweaks. */
+import React, { useState as uS, useEffect as uE, useMemo } from 'react'
+import { api } from './lib/api.js'
+import { C } from './lib/content.js'
+import { QData, computeStats, computeStreak, dayKey, isCorrect } from './lib/quiz.js'
+import { useTweaks, TweaksPanel, TweakSection, TweakColor, TweakRadio, TweakToggle } from './components/tweaks.jsx'
+import { I, Logo, Btn } from './components/ui.jsx'
+import Auth from './screens/Auth.jsx'
+import { Dashboard } from './screens/Dashboard.jsx'
+import { ModesScreen, LearnScreen, ProgressScreen, HistoryScreen } from './screens/LearnStats.jsx'
+import { GlossaryScreen, TradeTestScreen } from './screens/Extra.jsx'
+import { QuizScreen, ResultScreen } from './screens/Quiz.jsx'
+
+/* ---------- accent palettes (work with white button text) ---------- */
+const ACCENTS = {
+  "#3b76ff": { hi: "#5b8dff", dim: "rgba(59,118,255,.16)", line: "rgba(59,118,255,.45)" },
+  "#2563eb": { hi: "#4f86f0", dim: "rgba(37,99,235,.16)", line: "rgba(37,99,235,.45)" },
+  "#0ea5e9": { hi: "#38bdf8", dim: "rgba(14,165,233,.16)", line: "rgba(14,165,233,.45)" },
+};
+const FONTS = {
+  plex: "'IBM Plex Sans',system-ui,sans-serif",
+  system: "-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif",
+  mono: "'IBM Plex Mono',ui-monospace,monospace",
+};
+
+/* ---------- app ---------- */
+const EMPTY = { user: null, attempts: [], qstats: {}, wrong: [], days: {}, bestStreak: 0, ttBest: null };
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "accent": "#3b76ff",
+  "font": "plex",
+  "density": "regular",
+  "vizInQuiz": true
+}/*EDITMODE-END*/;
+
+export default function App({ initialUser, initialStore }) {
+  const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+  const [store, setStore] = uS(initialStore || EMPTY);
+  const [screen, setScreen] = uS(initialUser ? "dashboard" : "auth");
+  const [quiz, setQuiz] = uS(null);
+  const [lastResult, setLastResult] = uS(null);
+  const [learnTopic, setLearnTopic] = uS(null);
+  const [device, setDevice] = uS("desktop");
+  const [moreOpen, setMoreOpen] = uS(false);
+  const [winW, setWinW] = uS(window.innerWidth);
+  uE(() => { const f = () => setWinW(window.innerWidth); window.addEventListener("resize", f); return () => window.removeEventListener("resize", f); }, []);
+
+  const persist = (mut) => setStore((s) => ({ ...s, ...mut(s) }));
+  const stats = useMemo(() => computeStats(store.qstats), [store.qstats]);
+  const streak = useMemo(() => computeStreak(store.days), [store.days]);
+
+  /* navigation + actions */
+  const nav = (sc) => { setScreen(sc); setMoreOpen(false); document.querySelector(".content,.main")?.scrollTo?.(0, 0); };
+  const ctx = {
+    user: store.user, attempts: store.attempts, stats, streak, quiz, lastResult, learnTopic,
+    isMobile: device === "mobile" || winW < 760,
+    nav,
+    login: async (tgUser) => {
+      const { user } = await api.telegramLogin(tgUser)
+      const progress = await api.progress()
+      setStore(progress)
+      setScreen("dashboard")
+    },
+    logout: async () => {
+      await api.logout()
+      setStore(EMPTY)
+      setScreen("auth")
+    },
+    wrongIdList: () => store.wrong.map((id) => QData.question(id)).filter(Boolean),
+    bestStreak: () => Math.max(store.bestStreak, streak),
+    ttBest: store.ttBest,
+    recordTradeResult: (sc) => {
+      const days = { ...store.days }; const k = dayKey(Date.now()); days[k] = (days[k] || 0) + C.tradetest.length;
+      persist((s) => ({ days, ttBest: Math.max(s.ttBest || 0, sc), bestStreak: Math.max(s.bestStreak, computeStreak(days)) }));
+      api.saveTradeResult(sc).catch(() => {})
+    },
+    openLearn: (tid) => { setLearnTopic(tid); nav("learn"); },
+    confirmExit: () => nav("dashboard"),
+    startQuiz: (mode, topic) => {
+      let qs;
+      if (mode === "repeat") { qs = ctx.wrongIdList(); if (!qs.length) qs = C.questions; qs = QData.shuffle(qs).slice(0, C.modes.repeat.count); }
+      else { const pool = topic ? QData.byTopic(topic) : C.questions; const m = C.modes[mode]; qs = QData.shuffle(pool); if (m.count) qs = qs.slice(0, m.count); }
+      setQuiz({ mode, topic, questions: qs }); nav("quiz");
+    },
+    startRepeatFrom: (ids) => { const qs = QData.shuffle(ids.map((i) => QData.question(i)).filter(Boolean)); setQuiz({ mode: "repeat", topic: null, questions: qs }); nav("quiz"); },
+    finishQuiz: (qz, answers) => {
+      let score = 0; const perTopic = {}; const wrongQ = []; const qstats = { ...store.qstats }; const wrong = new Set(store.wrong);
+      qz.questions.forEach((q) => {
+        const ok = isCorrect(q, answers[q.id]);
+        if (ok) score++; else wrongQ.push(q);
+        perTopic[q.topic] = perTopic[q.topic] || { correct: 0, total: 0 };
+        perTopic[q.topic].total++; if (ok) perTopic[q.topic].correct++;
+        const st = qstats[q.id] || { seen: 0, correct: 0 }; st.seen++; if (ok) { st.correct++; wrong.delete(q.id); } else wrong.add(q.id); qstats[q.id] = st;
+      });
+      const attempt = { id: "a" + Date.now(), mode: qz.mode, topic: qz.topic, score, total: qz.questions.length, date: Date.now(),
+        qids: qz.questions.map((q) => q.id), answers, spark: qz.questions.map((q) => isCorrect(q, answers[q.id]) ? 100 : 20) };
+      const days = { ...store.days }; const k = dayKey(Date.now()); days[k] = (days[k] || 0) + qz.questions.length;
+      persist((s) => ({ attempts: [attempt, ...s.attempts].slice(0, 60), qstats, wrong: [...wrong], days, bestStreak: Math.max(s.bestStreak, computeStreak(days)) }));
+      api.saveAttempt({ mode: qz.mode, topic: qz.topic, qids: attempt.qids, answers, date: attempt.date }).catch(() => {})
+      setLastResult({ quiz: qz, answers, score, total: qz.questions.length, perTopic, wrong: wrongQ }); nav("result");
+    },
+    reviewAttempt: (a) => {
+      const questions = a.qids.map((id) => QData.question(id)).filter(Boolean);
+      const qz = { mode: a.mode, topic: a.topic, questions };
+      const perTopic = {}; const wrongQ = [];
+      questions.forEach((q) => { const ok = isCorrect(q, a.answers[q.id]); perTopic[q.topic] = perTopic[q.topic] || { correct: 0, total: 0 }; perTopic[q.topic].total++; if (ok) perTopic[q.topic].correct++; else wrongQ.push(q); });
+      setLastResult({ quiz: qz, answers: a.answers, score: a.score, total: a.total, perTopic, wrong: wrongQ }); nav("result");
+    },
+    activity: () => {
+      const weeks = []; const end = new Date(); end.setHours(0, 0, 0, 0);
+      const start = new Date(end); start.setDate(start.getDate() - 83);
+      for (let w = 0; w < 12; w++) { const col = []; for (let d = 0; d < 7; d++) { const day = new Date(start); day.setDate(start.getDate() + w * 7 + d); col.push(store.days[dayKey(day)] || 0); } weeks.push(col); }
+      return weeks;
+    },
+    achievements: () => {
+      const totA = C.topics.reduce((a, x) => a + stats[x.id].answered, 0);
+      const totC = C.topics.reduce((a, x) => a + stats[x.id].correct, 0);
+      const perfect = store.attempts.some((a) => a.score === a.total && a.total >= 5);
+      return [
+        { id: "first", name: "Первый шаг", desc: "Пройти первый квиз", icon: "play", c: "var(--ac)", got: store.attempts.length >= 1 },
+        { id: "ta", name: "Чартист", desc: "Освоить тех. анализ на 50%", icon: "trend", c: "var(--warn)", got: stats.ta.mastery >= 50 },
+        { id: "streak", name: "В ритме", desc: "Серия 3 дня", icon: "flame", c: "var(--down)", got: ctx.bestStreak() >= 3 },
+        { id: "perfect", name: "Без ошибок", desc: "100% в сессии 5+", icon: "target", c: "var(--ok)", got: perfect },
+        { id: "ten", name: "Десятка", desc: "50 ответов", icon: "layers", c: "var(--purple)", got: totA >= 50 || totA + 0 >= 50 },
+        { id: "scholar", name: "Эрудит", desc: "Освоить все блоки на 60%", icon: "brain", c: "var(--ac)", got: C.topics.every((x) => stats[x.id].mastery >= 60) },
+        { id: "fund", name: "Аналитик", desc: "Фунд. анализ 70%", icon: "chart", c: "var(--ac)", got: stats.fa.mastery >= 70 },
+        { id: "ace", name: "Снайпер", desc: "Точность 90%+", icon: "star", c: "var(--warn)", got: totA >= 10 && totC / totA >= .9 },
+      ];
+    },
+  };
+
+  /* tweak-driven theme vars */
+  const ac = ACCENTS[t.accent] || ACCENTS["#3b76ff"];
+  const themeVars = {
+    "--ac": t.accent, "--ac-hi": ac.hi, "--ac-dim": ac.dim, "--ac-line": ac.line,
+    "--fs": FONTS[t.font] || FONTS.plex,
+    fontSize: t.density === "compact" ? 14 : 15,
+    height: "100%",
+  };
+
+  const isMobile = device === "mobile" || winW < 760;
+  const phoneFrame = device === "mobile" && winW >= 760;
+
+  const NAVMAP = {
+    dashboard: { label: "Главная", icon: "home" },
+    modes: { label: "Тренировка", icon: "play" },
+    tradetest: { label: "Трейд-тест", icon: "trend" },
+    learn: { label: "Изучение", icon: "brain" },
+    glossary: { label: "Словарь", icon: "book" },
+    progress: { label: "Прогресс", icon: "chart" },
+    history: { label: "История", icon: "history" },
+  };
+  const GROUPS = [
+    { items: ["dashboard"] },
+    { label: "Практика", items: ["modes", "tradetest"] },
+    { label: "Материалы", items: ["learn", "glossary"] },
+    { label: "Статистика", items: ["progress", "history"] },
+  ];
+  const MOBILE_PRIMARY = ["dashboard", "modes", "tradetest", "learn"];
+  const MOBILE_MORE = ["glossary", "progress", "history"];
+  const titleOf = { ...Object.fromEntries(Object.entries(NAVMAP).map(([k, v]) => [k, v.label])), result: "Результат", quiz: "Квиз" };
+
+  const renderScreen = () => {
+    switch (screen) {
+      case "auth": return <Auth onLogin={ctx.login} />;
+      case "dashboard": return <Dashboard ctx={ctx} />;
+      case "modes": return <ModesScreen ctx={ctx} />;
+      case "tradetest": return <TradeTestScreen ctx={ctx} />;
+      case "learn": return <LearnScreen ctx={{ ...ctx, learnTopic }} />;
+      case "glossary": return <GlossaryScreen ctx={ctx} />;
+      case "progress": return <ProgressScreen ctx={ctx} />;
+      case "history": return <HistoryScreen ctx={ctx} />;
+      case "result": return <ResultScreen ctx={ctx} />;
+      case "quiz": return <QuizScreen ctx={{ ...ctx, vizInQuiz: t.vizInQuiz }} />;
+      default: return <Dashboard ctx={ctx} />;
+    }
+  };
+
+  /* ----- AUTH full-screen (no shell) ----- */
+  if (screen === "auth") {
+    return <div style={{ ...themeVars }}><Auth onLogin={ctx.login} /><DeviceToggle device={device} setDevice={setDevice} />{tweakPanel(t, setTweak)}</div>;
+  }
+
+  const shell = (
+    <div className={"app" + (isMobile ? " mobile" : "")} style={themeVars}>
+      {!isMobile && (
+        <aside className="sidebar">
+          <div className="brand"><Logo /><div><div className="brand-name">Кванта</div><div className="brand-sub">finance quiz</div></div></div>
+          {GROUPS.map((g, gi) => (
+            <React.Fragment key={gi}>
+              {g.label && <div className="nav-sec">{g.label}</div>}
+              {g.items.map((id) => { const n = NAVMAP[id]; return <button key={id} className={"nav-item" + (screen === id ? " on" : "")} onClick={() => nav(id)}>{I[n.icon]({ size: 18 })}{n.label}</button>; })}
+            </React.Fragment>
+          ))}
+          <div className="sidebar-foot">
+            <div className="user-chip" onClick={ctx.logout} title="Выйти">
+              <div className="avatar">{(store.user?.name || "U").slice(0, 1).toUpperCase()}</div>
+              <div style={{ flex: 1, minWidth: 0 }}><div style={{ fontSize: 13, fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{store.user?.name}</div>
+                <div style={{ fontSize: 11, color: "var(--tx-3)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{store.user?.email}</div></div>
+              <I.logout size={16} style={{ color: "var(--tx-3)" }} />
+            </div>
+          </div>
+        </aside>
+      )}
+      <main className="main">
+        {isMobile && screen !== "quiz" && (
+          <div className="mobile-top">
+            <div style={{ display: "flex", alignItems: "center", gap: 9 }}><Logo size={26} /><span style={{ fontWeight: 600, fontSize: 15 }}>{titleOf[screen]}</span></div>
+            <div className="avatar" style={{ width: 28, height: 28, fontSize: 12 }} onClick={ctx.logout}>{(store.user?.name || "U").slice(0, 1).toUpperCase()}</div>
+          </div>
+        )}
+        {!isMobile && screen !== "quiz" && (
+          <div className="topbar"><h1>{titleOf[screen]}</h1><div style={{ flex: 1 }} />
+            {screen !== "modes" && <Btn variant="pri" icon={<I.play size={14} fill />} onClick={() => nav("modes")}>Тренировка</Btn>}</div>
+        )}
+        {screen === "quiz" ? renderScreen() : <div className="content">{renderScreen()}</div>}
+        {isMobile && screen !== "quiz" && (
+          <nav className="tabbar">
+            {MOBILE_PRIMARY.map((id) => { const n = NAVMAP[id]; return <button key={id} className={"tab" + (screen === id ? " on" : "")} onClick={() => nav(id)}>{I[n.icon]({ size: 21 })}{n.label}</button>; })}
+            <button className={"tab" + (MOBILE_MORE.includes(screen) || moreOpen ? " on" : "")} onClick={() => setMoreOpen(true)}>{I.grid({ size: 21 })}Ещё</button>
+          </nav>
+        )}
+      </main>
+    </div>
+  );
+
+  return (
+    <>
+      {phoneFrame ? <PhoneFrame>{shell}</PhoneFrame> : shell}
+      {moreOpen && (
+        <div onClick={() => setMoreOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 8000, background: "rgba(0,0,0,.5)", backdropFilter: "blur(3px)", display: "flex", alignItems: "flex-end" }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ width: "100%", background: "#13151b", borderTop: "1px solid var(--border)", borderRadius: "18px 18px 0 0", padding: "10px 12px calc(18px + env(safe-area-inset-bottom))", boxShadow: "0 -20px 60px rgba(0,0,0,.6)" }}>
+            <div style={{ width: 38, height: 4, borderRadius: 4, background: "var(--border-strong)", margin: "6px auto 12px" }} />
+            {MOBILE_MORE.map((id) => { const n = NAVMAP[id]; return (
+              <button key={id} onClick={() => nav(id)} style={{ width: "100%", display: "flex", alignItems: "center", gap: 13, padding: "13px 12px", borderRadius: "var(--r-sm)", color: screen === id ? "var(--ac-hi)" : "var(--tx)", fontSize: 15, fontWeight: 500, textAlign: "left" }}>{I[n.icon]({ size: 19 })}{n.label}</button>
+            ); })}
+            <div className="divider" style={{ margin: "8px 0" }} />
+            <button onClick={ctx.logout} style={{ width: "100%", display: "flex", alignItems: "center", gap: 13, padding: "13px 12px", borderRadius: "var(--r-sm)", color: "var(--tx-2)", fontSize: 15, fontWeight: 500, textAlign: "left" }}>{I.logout({ size: 19 })}Выйти</button>
+          </div>
+        </div>
+      )}
+      <DeviceToggle device={device} setDevice={setDevice} />
+      {tweakPanel(t, setTweak)}
+    </>
+  );
+}
+
+function PhoneFrame({ children }) {
+  return (
+    <div style={{ height: "100vh", display: "grid", placeItems: "center", background: "radial-gradient(800px 600px at 50% 20%, #161616, #0a0a0a)" }}>
+      <div style={{ width: 402, height: "min(872px, 94vh)", borderRadius: 46, padding: 11, background: "linear-gradient(160deg,#2a2a2e,#0e0e10)", boxShadow: "0 40px 90px rgba(0,0,0,.7), inset 0 0 0 1px rgba(255,255,255,.06)" }}>
+        <div style={{ width: "100%", height: "100%", borderRadius: 36, overflow: "hidden", position: "relative", background: "var(--bg)" }}>
+          <div style={{ position: "absolute", top: 9, left: "50%", transform: "translateX(-50%)", width: 110, height: 26, background: "#000", borderRadius: 16, zIndex: 100 }} />
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+function DeviceToggle({ device, setDevice }) {
+  return (
+    <div style={{ position: "fixed", left: 16, bottom: 16, zIndex: 9000, display: "flex", gap: 4, background: "rgba(20,20,22,.92)", border: "1px solid var(--border)", borderRadius: 10, padding: 4, backdropFilter: "blur(10px)" }}>
+      {[["desktop", "Desktop"], ["mobile", "Mobile"]].map(([k, lbl]) => (
+        <button key={k} onClick={() => setDevice(k)} className="chip" style={{ height: 30, padding: "0 11px", gap: 6, cursor: "pointer", background: device === k ? "var(--ac)" : "transparent", color: device === k ? "#fff" : "var(--tx-2)" }}>
+          {k === "desktop" ? I.desktop({ size: 14 }) : I.mobile({ size: 14 })}{lbl}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function tweakPanel(t, setTweak) {
+  return (
+    <TweaksPanel>
+      <TweakSection label="Акцент" />
+      <TweakColor label="Цвет" value={t.accent} options={["#3b76ff", "#2563eb", "#0ea5e9"]} onChange={(v) => setTweak("accent", v)} />
+      <TweakSection label="Типографика" />
+      <TweakRadio label="Шрифт" value={t.font} options={["plex", "system", "mono"]} onChange={(v) => setTweak("font", v)} />
+      <TweakRadio label="Плотность" value={t.density} options={["regular", "compact"]} onChange={(v) => setTweak("density", v)} />
+      <TweakSection label="Квиз" />
+      <TweakToggle label="Визуализация в разборе" value={t.vizInQuiz} onChange={(v) => setTweak("vizInQuiz", v)} />
+    </TweaksPanel>
+  );
+}
