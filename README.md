@@ -1,6 +1,6 @@
-# Кванта — тренажёр по финансам
+# 67quant — тренажёр по финансам
 
-Финансовый квиз-тренажёр. Frontend — Vite + React (SPA), backend — Vercel serverless-функции (`/api`), хранилище — Neon Postgres. **Авторизация только через Telegram** (Login Widget).
+Финансовый квиз-тренажёр. Frontend — Vite + React (SPA), backend — Vercel serverless-функции (`/api`), хранилище — Neon Postgres. **Авторизация только через Telegram** (deep-link бот).
 
 ## Архитектура
 

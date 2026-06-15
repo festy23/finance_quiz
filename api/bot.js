@@ -35,8 +35,8 @@ export default async function handler(req, res) {
         }
       } else {
         // голый /start без токена — просто приветствие с кнопкой на сайт
-        await sendMessage(chatId, 'Привет! Это бот тренажёра «Кванта». Открой приложение кнопкой ниже.', {
-          reply_markup: { inline_keyboard: [[{ text: 'Открыть Кванту', url: SITE }]] },
+        await sendMessage(chatId, 'Привет! Это бот тренажёра «67quant». Открой приложение кнопкой ниже.', {
+          reply_markup: { inline_keyboard: [[{ text: 'Открыть 67quant', url: SITE }]] },
         })
       }
     }

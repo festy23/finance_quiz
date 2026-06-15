@@ -61,7 +61,7 @@ export default function Auth({ onLogin }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 11, marginBottom: 22 }}>
           <Logo size={34} />
           <div>
-            <div className="brand-name" style={{ fontSize: 16 }}>Кванта</div>
+            <div className="brand-name" style={{ fontSize: 16 }}>67quant</div>
             <div className="brand-sub">тренажёр по финансам</div>
           </div>
         </div>

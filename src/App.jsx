@@ -183,7 +183,7 @@ export default function App({ initialUser, initialStore }) {
     <div className={"app" + (isMobile ? " mobile" : "")} style={themeVars}>
       {!isMobile && (
         <aside className="sidebar">
-          <div className="brand"><Logo /><div><div className="brand-name">Кванта</div><div className="brand-sub">finance quiz</div></div></div>
+          <div className="brand"><Logo /><div><div className="brand-name">67quant</div><div className="brand-sub">finance quiz</div></div></div>
           {GROUPS.map((g, gi) => (
             <React.Fragment key={gi}>
               {g.label && <div className="nav-sec">{g.label}</div>}
