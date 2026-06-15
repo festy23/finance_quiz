@@ -46,11 +46,8 @@ export const I = {
 /* ---------- primitives ---------- */
 export function Logo({size=30}){
   return (
-    <div className="brand-mark" style={{width:size,height:size,flex:`0 0 ${size}px`}}>
-      <svg width={size*.58} height={size*.58} viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M3 17l5-6 4 3 5-8"/><path d="M16 6h5v5"/>
-      </svg>
-    </div>
+    <img src="/logo.png" alt="67quant" width={size} height={size}
+      style={{width:size,height:size,flex:`0 0 ${size}px`,borderRadius:size*0.26,display:"block",objectFit:"cover"}} />
   );
 }
 export function Chip({children,color,bg,style}){
