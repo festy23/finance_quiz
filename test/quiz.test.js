@@ -15,11 +15,13 @@ describe('quiz helpers', () => {
     expect(isCorrect(q, undefined)).toBeFalsy()
   })
 
-  it('QData.byTopic / question / shuffle work on injected content', () => {
+  it('QData.byTopic / topic / question / shuffle work on injected content', () => {
     C.questions = [
       { id: 'a', topic: 'pf' }, { id: 'b', topic: 'ta' }, { id: 'c', topic: 'pf' },
     ]
+    C.topics = [{ id: 'pf', name: 'Личные финансы', short: 'ЛФ' }, { id: 'ta', name: 'Тех. анализ', short: 'ТА' }]
     expect(QData.byTopic('pf').map(q => q.id)).toEqual(['a', 'c'])
+    expect(QData.topic('ta').short).toBe('ТА')
     expect(QData.question('b').topic).toBe('ta')
     expect(QData.shuffle(['x', 'y', 'z'])).toHaveLength(3)
   })

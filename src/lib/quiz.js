@@ -11,6 +11,7 @@ export function isCorrect(q, ans) {
 
 export const QData = {
   byTopic: (tid) => C.questions.filter((q) => q.topic === tid),
+  topic: (id) => C.topics.find((t) => t.id === id),
   question: (id) => C.questions.find((q) => q.id === id),
   shuffle: (arr) => {
     const a = [...arr]
