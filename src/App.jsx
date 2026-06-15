@@ -10,6 +10,7 @@ import { Dashboard } from './screens/Dashboard.jsx'
 import { ModesScreen, LearnScreen, ProgressScreen, HistoryScreen } from './screens/LearnStats.jsx'
 import { GlossaryScreen, TradeTestScreen } from './screens/Extra.jsx'
 import { QuizScreen, ResultScreen } from './screens/Quiz.jsx'
+import { ProfileScreen } from './screens/Profile.jsx'
 
 /* ---------- accent palettes (work with white button text) ---------- */
 const ACCENTS = {
@@ -157,7 +158,7 @@ export default function App({ initialUser, initialStore }) {
   ];
   const MOBILE_PRIMARY = ["dashboard", "modes", "tradetest", "learn"];
   const MOBILE_MORE = ["glossary", "progress", "history"];
-  const titleOf = { ...Object.fromEntries(Object.entries(NAVMAP).map(([k, v]) => [k, v.label])), result: "Результат", quiz: "Квиз" };
+  const titleOf = { ...Object.fromEntries(Object.entries(NAVMAP).map(([k, v]) => [k, v.label])), result: "Результат", quiz: "Квиз", profile: "Профиль" };
 
   const renderScreen = () => {
     switch (screen) {
@@ -169,6 +170,7 @@ export default function App({ initialUser, initialStore }) {
       case "glossary": return <GlossaryScreen ctx={ctx} />;
       case "progress": return <ProgressScreen ctx={ctx} />;
       case "history": return <HistoryScreen ctx={ctx} />;
+      case "profile": return <ProfileScreen ctx={ctx} />;
       case "result": return <ResultScreen ctx={ctx} />;
       case "quiz": return <QuizScreen ctx={{ ...ctx, vizInQuiz: t.vizInQuiz }} />;
       default: return <Dashboard ctx={ctx} />;
@@ -192,11 +194,11 @@ export default function App({ initialUser, initialStore }) {
             </React.Fragment>
           ))}
           <div className="sidebar-foot">
-            <div className="user-chip" onClick={ctx.logout} title="Выйти">
-              <div className="avatar">{(store.user?.name || "U").slice(0, 1).toUpperCase()}</div>
+            <div className="user-chip" onClick={() => nav("profile")} title="Профиль" style={{ cursor: "pointer" }}>
+              <div className="avatar" style={{ overflow: "hidden" }}>{store.user?.photo_url ? <img src={store.user.photo_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : (store.user?.name || "U").slice(0, 1).toUpperCase()}</div>
               <div style={{ flex: 1, minWidth: 0 }}><div style={{ fontSize: 13, fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{store.user?.name}</div>
-                <div style={{ fontSize: 11, color: "var(--tx-3)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{store.user?.email}</div></div>
-              <I.logout size={16} style={{ color: "var(--tx-3)" }} />
+                <div style={{ fontSize: 11, color: "var(--tx-3)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Профиль</div></div>
+              <I.chevR size={16} style={{ color: "var(--tx-3)" }} />
             </div>
           </div>
         </aside>
@@ -205,7 +207,7 @@ export default function App({ initialUser, initialStore }) {
         {isMobile && screen !== "quiz" && (
           <div className="mobile-top">
             <div style={{ display: "flex", alignItems: "center", gap: 9 }}><Logo size={26} /><span style={{ fontWeight: 600, fontSize: 15 }}>{titleOf[screen]}</span></div>
-            <div className="avatar" style={{ width: 28, height: 28, fontSize: 12 }} onClick={ctx.logout}>{(store.user?.name || "U").slice(0, 1).toUpperCase()}</div>
+            <div className="avatar" style={{ width: 28, height: 28, fontSize: 12, overflow: "hidden" }} onClick={() => nav("profile")}>{store.user?.photo_url ? <img src={store.user.photo_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : (store.user?.name || "U").slice(0, 1).toUpperCase()}</div>
           </div>
         )}
         {!isMobile && screen !== "quiz" && (
