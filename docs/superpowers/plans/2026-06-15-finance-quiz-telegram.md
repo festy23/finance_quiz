@@ -1161,7 +1161,9 @@ const ddl = readFileSync(new URL('../api/_lib/schema.sql', import.meta.url), 'ut
 
 const statements = ddl.split(';').map((s) => s.trim()).filter(Boolean)
 for (const stmt of statements) {
-  await sql.query(stmt)
+  // neon() http-функция выполняет произвольный SQL при вызове со строкой
+  // (в @neondatabase/serverless 0.10 у неё нет метода .query()).
+  await sql(stmt)
 }
 console.log(`migrated: ${statements.length} statements`)
 ```

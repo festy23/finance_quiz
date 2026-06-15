@@ -6,6 +6,7 @@ const ddl = readFileSync(new URL('../api/_lib/schema.sql', import.meta.url), 'ut
 
 const statements = ddl.split(';').map((s) => s.trim()).filter(Boolean)
 for (const stmt of statements) {
-  await sql.query(stmt)
+  // neon() http-функция выполняет произвольный SQL-текст при вызове со строкой.
+  await sql(stmt)
 }
 console.log(`migrated: ${statements.length} statements`)
