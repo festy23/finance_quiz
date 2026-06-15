@@ -49,3 +49,14 @@ create table if not exists user_meta (
   best_streak int not null default 0,
   tt_best     int
 );
+
+create table if not exists login_tokens (
+  token       text primary key,
+  telegram_id bigint,
+  username    text,
+  first_name  text,
+  last_name   text,
+  photo_url   text,
+  status      text not null default 'pending',
+  created_at  timestamptz not null default now()
+);

@@ -54,8 +54,8 @@ export default function App({ initialUser, initialStore }) {
     user: store.user, attempts: store.attempts, stats, streak, quiz, lastResult, learnTopic,
     isMobile: winW < 760,
     nav,
-    login: async (tgUser) => {
-      const { user } = await api.telegramLogin(tgUser)
+    login: async () => {
+      // сессия уже выставлена /api/auth/poll — остаётся подтянуть прогресс
       const progress = await api.progress()
       setStore(progress)
       setScreen("dashboard")
