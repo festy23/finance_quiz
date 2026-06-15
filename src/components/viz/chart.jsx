@@ -292,6 +292,142 @@ function RSIViz() {
   );
 }
 
+/* ============ 8. DOUBLE TOP ============ */
+function DoubleTop() {
+  const anchors = [[0, 80], [.18, 116], [.32, 100], [.5, 116], [.68, 101], [.82, 91], [1, 82]];
+  const candles = genCandles(anchorsToCloses(anchors, 60, 1.2, 18), { seed: 24 });
+  const bi = Math.floor(60 * .8);
+  return (
+    <div className="viz fade-in">
+      <div className="viz-head"><span className="viz-title">Двойная вершина</span></div>
+      <div className="viz-body" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        <TVChart candles={candles} height={240} volume
+          priceLines={[{ price: 100, color: "#787b86", dashed: true, title: "линия шеи" }]}
+          markers={[
+            { time: candles[11].time, position: "aboveBar", color: "#2962ff", shape: "circle", text: "вершина 1" },
+            { time: candles[30].time, position: "aboveBar", color: "#2962ff", shape: "circle", text: "вершина 2" },
+            { time: candles[bi].time, position: "belowBar", color: "#ef5350", shape: "arrowDown", text: "пробой" },
+          ]} />
+        <div style={{ fontSize: 12.5, color: "var(--tx-2)", textAlign: "center" }}>Две вершины на одном уровне — ещё не сигнал. Сигнал появляется после <b>пробоя минимума между вершинами</b>. Цель = высота фигуры от точки пробоя.</div>
+      </div>
+    </div>
+  );
+}
+
+/* ============ 9. TRIPLE TOP ============ */
+function TripleTop() {
+  const anchors = [[0, 82], [.13, 114], [.23, 100], [.4, 114], [.5, 100], [.66, 114], [.78, 99], [.9, 90], [1, 84]];
+  const candles = genCandles(anchorsToCloses(anchors, 66, 1.1, 19), { seed: 27 });
+  const bi = Math.floor(66 * .83);
+  return (
+    <div className="viz fade-in">
+      <div className="viz-head"><span className="viz-title">Тройная вершина</span></div>
+      <div className="viz-body" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        <TVChart candles={candles} height={240} volume
+          priceLines={[{ price: 100, color: "#787b86", dashed: true, title: "поддержка" }]}
+          markers={[
+            { time: candles[9].time, position: "aboveBar", color: "#2962ff", shape: "circle", text: "1" },
+            { time: candles[26].time, position: "aboveBar", color: "#2962ff", shape: "circle", text: "2" },
+            { time: candles[43].time, position: "aboveBar", color: "#2962ff", shape: "circle", text: "3" },
+            { time: candles[bi].time, position: "belowBar", color: "#ef5350", shape: "arrowDown", text: "пробой" },
+          ]} />
+        <div style={{ fontSize: 12.5, color: "var(--tx-2)", textAlign: "center" }}>Три пика на одном уровне: покупатели трижды не прошли сопротивление. Сигнал — <b>пробой поддержки</b> под промежуточными спадами. Надёжнее двойной, но формируется дольше.</div>
+      </div>
+    </div>
+  );
+}
+
+/* ============ 10. RECTANGLE ============ */
+function Rectangle() {
+  const anchors = [[0, 90], [.12, 112], [.24, 92], [.38, 112], [.5, 92], [.64, 112], [.76, 92], [.88, 112], [1, 130]];
+  const candles = genCandles(anchorsToCloses(anchors, 64, 0.9, 31), { seed: 36 });
+  const bi = Math.floor(64 * .9);
+  return (
+    <div className="viz fade-in">
+      <div className="viz-head"><span className="viz-title">Прямоугольник (боковой диапазон)</span></div>
+      <div className="viz-body" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        <TVChart candles={candles} height={240} volume
+          priceLines={[{ price: 113, color: "#ef5350", dashed: true, title: "сопротивление" }, { price: 91, color: "#26a69a", dashed: true, title: "поддержка" }]}
+          markers={[{ time: candles[bi].time, position: "belowBar", color: "#26a69a", shape: "arrowUp", text: "пробой" }]} />
+        <div style={{ fontSize: 12.5, color: "var(--tx-2)", textAlign: "center" }}>Цена ходит между поддержкой и сопротивлением (флэт). Сигнал — <b>пробой границы</b>; цель = высота прямоугольника от точки пробоя.</div>
+      </div>
+    </div>
+  );
+}
+
+/* ============ 11. FLAG ============ */
+function Flag() {
+  const anchors = [[0, 70], [.28, 126], [.4, 116], [.5, 121], [.6, 112], [.72, 117], [.8, 110], [.9, 132], [1, 146]];
+  const candles = genCandles(anchorsToCloses(anchors, 64, 0.8, 44), { seed: 47 });
+  const n = candles.length;
+  const fa = candles[Math.floor(n * .3)].time, fb = candles[Math.floor(n * .8)].time;
+  return (
+    <div className="viz fade-in">
+      <div className="viz-head"><span className="viz-title">Флаг — пауза в тренде</span></div>
+      <div className="viz-body" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        <TVChart candles={candles} height={240} volume
+          lines={[{ data: [{ time: fa, value: 124 }, { time: fb, value: 113 }], color: "#787b86", width: 1.4, dashed: true }, { data: [{ time: fa, value: 114 }, { time: fb, value: 105 }], color: "#787b86", width: 1.4, dashed: true }]}
+          markers={[
+            { time: candles[Math.floor(n * .14)].time, position: "belowBar", color: "#26a69a", shape: "arrowUp", text: "древко" },
+            { time: candles[Math.floor(n * .86)].time, position: "belowBar", color: "#26a69a", shape: "arrowUp", text: "пробой" },
+          ]} />
+        <div style={{ fontSize: 12.5, color: "var(--tx-2)", textAlign: "center" }}>Сильный импульс (древко) → короткая наклонная пауза против движения → продолжение тренда. Цель оценивают по <b>длине древка</b>.</div>
+      </div>
+    </div>
+  );
+}
+
+/* ============ 12. WEDGE ============ */
+function Wedge() {
+  const anchors = [[0, 80], [.14, 102], [.26, 92], [.4, 110], [.52, 101], [.64, 116], [.74, 109], [.84, 101], [1, 84]];
+  const candles = genCandles(anchorsToCloses(anchors, 62, 0.9, 52), { seed: 53 });
+  const n = candles.length;
+  const a = candles[0].time, b = candles[Math.floor(n * .8)].time;
+  return (
+    <div className="viz fade-in">
+      <div className="viz-head"><span className="viz-title">Восходящий клин (медвежий)</span></div>
+      <div className="viz-body" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        <TVChart candles={candles} height={240} volume
+          lines={[{ data: [{ time: a, value: 104 }, { time: b, value: 120 }], color: "#787b86", width: 1.4, dashed: true }, { data: [{ time: a, value: 86 }, { time: b, value: 110 }], color: "#787b86", width: 1.4, dashed: true }]}
+          markers={[{ time: candles[Math.floor(n * .86)].time, position: "aboveBar", color: "#ef5350", shape: "arrowDown", text: "пробой ↓" }]} />
+        <div style={{ fontSize: 12.5, color: "var(--tx-2)", textAlign: "center" }}>Обе линии направлены вверх, но рост слабеет. Восходящий клин — чаще <b>медвежий</b>: пробой обычно вниз, против наклона. Важен контекст тренда и объёма.</div>
+      </div>
+    </div>
+  );
+}
+
+/* ============ 13. SAUCER ============ */
+function Saucer() {
+  const anchors = [[0, 120], [.16, 104], [.32, 94], [.46, 89], [.56, 88], [.7, 93], [.84, 104], [1, 120]];
+  const candles = genCandles(anchorsToCloses(anchors, 70, 0.6, 63), { seed: 59 });
+  return (
+    <div className="viz fade-in">
+      <div className="viz-head"><span className="viz-title">Блюдце (закруглённое основание)</span></div>
+      <div className="viz-body" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        <TVChart candles={candles} height={240} volume />
+        <div style={{ fontSize: 12.5, color: "var(--tx-2)", textAlign: "center" }}>Плавный разворот: цена медленно перестаёт падать, волатильность и объём минимальны в середине и растут на выходе. Резкого сигнала, как пробой шеи, нет — постепенное накопление.</div>
+      </div>
+    </div>
+  );
+}
+
+/* ============ 14. SPIKE ============ */
+function Spike() {
+  const anchors = [[0, 120], [.32, 116], [.44, 84], [.5, 78], [.58, 114], [.78, 120], [1, 124]];
+  const candles = genCandles(anchorsToCloses(anchors, 60, 1.0, 71), { seed: 67 });
+  const lo = Math.floor(60 * .5);
+  return (
+    <div className="viz fade-in">
+      <div className="viz-head"><span className="viz-title">Шип (V-образный разворот)</span></div>
+      <div className="viz-body" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        <TVChart candles={candles} height={240} volume
+          markers={[{ time: candles[lo].time, position: "belowBar", color: "#26a69a", shape: "arrowUp", text: "разворот" }]} />
+        <div style={{ fontSize: 12.5, color: "var(--tx-2)", textAlign: "center" }}>Резкий V-образный разворот без зоны консолидации — часто на панике, эйфории или капитуляции. Формируется быстро, поэтому заранее распознаётся плохо.</div>
+      </div>
+    </div>
+  );
+}
+
 export const VIZ_CHART = {
   candle: CandleAnatomy,
   supportresistance: SR,
@@ -300,4 +436,11 @@ export const VIZ_CHART = {
   movingavg: MA,
   macd: MACDViz,
   rsi: RSIViz,
+  doubletop: DoubleTop,
+  tripletop: TripleTop,
+  rectangle: Rectangle,
+  flag: Flag,
+  wedge: Wedge,
+  saucer: Saucer,
+  spike: Spike,
 }
