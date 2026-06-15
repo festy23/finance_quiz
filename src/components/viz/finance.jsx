@@ -4,7 +4,7 @@ import { I } from '../ui.jsx'
 import { pct1, money } from '../../lib/format.js'
 
 /* ---------- shared viz UI ---------- */
-function VSlider({ label, value, min, max, step = 1, onChange, fmt, accent = "var(--ac)" }) {
+export function VSlider({ label, value, min, max, step = 1, onChange, fmt, accent = "var(--ac)" }) {
   const pct = ((value - min) / (max - min)) * 100;
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>

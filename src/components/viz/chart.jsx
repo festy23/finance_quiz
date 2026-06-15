@@ -2,6 +2,7 @@
    plus custom SVG indicator panels. */
 import React, { useState, useMemo } from 'react'
 import { TVChart, anchorsToCloses, genCandles, volFromCandles } from '../charts.jsx'
+import { VSlider } from './finance.jsx'
 
 /* ---------- indicator math ---------- */
 function smaSeries(c, p) {
@@ -98,21 +99,6 @@ function CandleAnatomy() {
   const py = (v) => bot - ((v - L) / ((H - L) || 1)) * sp;
   const col = up ? "var(--up)" : "var(--down)";
   const bodyT = py(Math.max(o, c)), bodyB = py(Math.min(o, c));
-
-  function VSlider({ label, value, min, max, onChange, accent = "var(--ac)" }) {
-    const pct = ((value - min) / (max - min)) * 100;
-    return (
-      <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-          <span style={{ fontSize: 12.5, color: "var(--tx-2)", fontWeight: 500 }}>{label}</span>
-          <span className="mono" style={{ fontSize: 13.5, color: accent, fontWeight: 600 }}>{value}</span>
-        </div>
-        <input className="rng" type="range" min={min} max={max} step={1} value={value}
-          onChange={(e) => onChange(parseFloat(e.target.value))}
-          style={{ background: `linear-gradient(90deg, ${accent} ${pct}%, var(--panel-3) ${pct}%)` }} />
-      </div>
-    );
-  }
 
   return (
     <div className="viz fade-in">
@@ -248,21 +234,6 @@ function MA() {
     if (fast[i] == null || slow[i] == null || fast[i - 1] == null || slow[i - 1] == null) continue;
     if (fast[i - 1] <= slow[i - 1] && fast[i] > slow[i]) markers.push({ time: candles[i].time, position: "belowBar", color: "#26a69a", shape: "arrowUp", text: "golden" });
     if (fast[i - 1] >= slow[i - 1] && fast[i] < slow[i]) markers.push({ time: candles[i].time, position: "aboveBar", color: "#ef5350", shape: "arrowDown", text: "death" });
-  }
-
-  function VSlider({ label, value, min, max, onChange, accent = "var(--ac)" }) {
-    const pct = ((value - min) / (max - min)) * 100;
-    return (
-      <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-          <span style={{ fontSize: 12.5, color: "var(--tx-2)", fontWeight: 500 }}>{label}</span>
-          <span className="mono" style={{ fontSize: 13.5, color: accent, fontWeight: 600 }}>{value}</span>
-        </div>
-        <input className="rng" type="range" min={min} max={max} step={1} value={value}
-          onChange={(e) => onChange(parseFloat(e.target.value))}
-          style={{ background: `linear-gradient(90deg, ${accent} ${pct}%, var(--panel-3) ${pct}%)` }} />
-      </div>
-    );
   }
 
   return (
