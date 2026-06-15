@@ -70,7 +70,7 @@ export function TTChart({ spec, reveal, mobile }) {
       <div style={{ padding: 10 }}>
         <TVChart candles={built.candles} seriesType={built.seriesType} height={mobile ? 220 : 300}
           volume={built.volume} lines={built.lines} markers={built.markers} priceLines={built.priceLines} />
-        {built.indicator && <div style={{ marginTop: 10 }}><SubPanel candles={built.candles} kind={built.indicator} /></div>}
+        {built.indicator && <div style={{ marginTop: 10 }}><SubPanel candles={built.candles} kind={built.indicator} reveal={reveal} /></div>}
       </div>
     </div>
   );

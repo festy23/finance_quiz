@@ -40,7 +40,7 @@ function macdSeries(c) {
 function lineData(candles, ser) { return candles.map((c, i) => ser[i] != null ? { time: c.time, value: +ser[i].toFixed(2) } : null).filter(Boolean); }
 
 /* custom SVG sub-panel rendered below the price chart (index-based) */
-export function SubPanel({ candles, kind, h = 96 }) {
+export function SubPanel({ candles, kind, h = 96, reveal = true }) {
   const closes = candles.map((c) => c.close);
   const W = 600, pad = 4;
   const n = closes.length;
@@ -52,7 +52,7 @@ export function SubPanel({ candles, kind, h = 96 }) {
     const last = r[r.length - 1];
     return (
       <div className="viz" style={{ background: "var(--bg-1)" }}>
-        <div className="viz-head" style={{ padding: "8px 12px" }}><span className="viz-title" style={{ fontSize: 11.5 }}>RSI (14)</span>
+        <div className="viz-head" style={{ padding: "8px 12px" }}><span className="viz-title" style={{ fontSize: 11.5 }}>{reveal ? "RSI (14)" : "Индикатор"}</span>
           <span className="mono" style={{ fontSize: 12, color: last > 70 ? "var(--down)" : last < 30 ? "var(--ok)" : "var(--tx-2)" }}>{last?.toFixed(1)}</span></div>
         <svg viewBox={`0 0 ${W} ${h}`} width="100%" style={{ display: "block" }} preserveAspectRatio="none">
           <rect x="0" y={y(100)} width={W} height={y(70) - y(100)} fill="rgba(239,83,80,.08)" />
@@ -75,8 +75,8 @@ export function SubPanel({ candles, kind, h = 96 }) {
   const spts = signal.map((v, i) => v != null ? `${x(i).toFixed(1)} ${y(v).toFixed(1)}` : null).filter(Boolean);
   return (
     <div className="viz" style={{ background: "var(--bg-1)" }}>
-      <div className="viz-head" style={{ padding: "8px 12px" }}><span className="viz-title" style={{ fontSize: 11.5 }}>MACD (12, 26, 9)</span>
-        <span className="mono" style={{ fontSize: 11, color: "var(--tx-3)" }}>EMA12 − EMA26</span></div>
+      <div className="viz-head" style={{ padding: "8px 12px" }}><span className="viz-title" style={{ fontSize: 11.5 }}>{reveal ? "MACD (12, 26, 9)" : "Индикатор"}</span>
+        <span className="mono" style={{ fontSize: 11, color: "var(--tx-3)" }}>{reveal ? "EMA12 − EMA26" : ""}</span></div>
       <svg viewBox={`0 0 ${W} ${h}`} width="100%" style={{ display: "block" }} preserveAspectRatio="none">
         <line x1="0" y1={h / 2} x2={W} y2={h / 2} stroke="rgba(255,255,255,.1)" strokeWidth="1" />
         {hist.map((v, i) => v != null ? <rect key={i} x={x(i) - bw / 2} y={Math.min(y(v), h / 2)} width={bw} height={Math.abs(y(v) - h / 2)} fill={v >= 0 ? "rgba(38,166,154,.55)" : "rgba(239,83,80,.55)"} /> : null)}
