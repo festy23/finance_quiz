@@ -5,6 +5,18 @@ import { api } from './lib/api.js'
 import { initContent } from './lib/content.js'
 import './styles.css'
 
+// Telegram Login Widget привязан к одному домену (financequiz-gamma.vercel.app).
+// Любой другой *.vercel.app адрес (длинный URL конкретного деплоя, www-вариант)
+// даёт "Bot domain invalid". Канонизируем хост, чтобы вход работал всегда.
+const CANONICAL_HOST = 'financequiz-gamma.vercel.app'
+if (
+  typeof location !== 'undefined' &&
+  location.hostname.endsWith('.vercel.app') &&
+  location.hostname !== CANONICAL_HOST
+) {
+  location.replace('https://' + CANONICAL_HOST + location.pathname + location.search)
+}
+
 async function boot() {
   // Контент нужен синхронно экранам — грузим до первого рендера.
   const content = await api.content()
