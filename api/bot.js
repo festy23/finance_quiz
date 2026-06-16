@@ -1,5 +1,5 @@
 import { sql } from './_lib/db.js'
-import { sendMessage } from './_lib/botapi.js'
+import { sendMessage, fetchProfilePhotoUrl } from './_lib/botapi.js'
 
 const SITE = process.env.SITE_URL || 'https://financequiz-gamma.vercel.app'
 
@@ -30,6 +30,9 @@ export default async function handler(req, res) {
            returning token`
         if (rows.length) {
           await sendMessage(chatId, '✅ <b>Готово!</b> Вернитесь на сайт — вход выполнен.')
+          // подтягиваем фото профиля → Blob → в login_tokens (poll перенесёт в users)
+          const photo = await fetchProfilePhotoUrl(from.id)
+          if (photo) await sql`update login_tokens set photo_url = ${photo} where token = ${token}`
         } else {
           await sendMessage(chatId, 'Эта ссылка для входа устарела. Откройте сайт и нажмите «Войти» ещё раз.')
         }
