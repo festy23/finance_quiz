@@ -82,26 +82,26 @@ function ScopeChip({ on, onClick, label, dot }) {
 /* ============ LEARN — interactive concept cards ============ */
 export function LearnScreen({ ctx }) {
   const [topic, setTopic] = useState(ctx.learnTopic || null);
-  const cards = C.questions.filter((q) => q.viz && (!topic || q.topic === topic));
+  const cards = C.questions.filter((q) => (!topic || q.topic === topic));
   return (
     <div className="wrap fade-in" style={{ maxWidth: 760 }}>
       <h2 style={{ fontSize: 24, letterSpacing: "-.02em", margin: "0 0 4px" }}>Изучение</h2>
-      <p style={{ color: "var(--tx-3)", marginTop: 0, marginBottom: 22, fontSize: 14 }}>Интерактивные визуализации ключевых концепций — крутите параметры, чтобы понять механику</p>
+      <p style={{ color: "var(--tx-3)", marginTop: 0, marginBottom: 22, fontSize: 14 }}>Все билеты с готовым разбором — и интерактивными графиками там, где концепцию можно показать наглядно</p>
       <div className="seg" style={{ marginBottom: 24 }}>
         <button className={!topic ? "on" : ""} onClick={() => setTopic(null)}>Все</button>
         {C.topics.map((t) => <button key={t.id} className={topic === t.id ? "on" : ""} onClick={() => setTopic(t.id)}>{t.short}</button>)}
       </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
         {cards.map((q) => {
           const V = VIZ[q.viz];
           return (
-            <div key={q.id} className="fade-in">
+            <div key={q.id} className="card card-pad fade-in">
               <div style={{ display: "flex", alignItems: "center", gap: 9, marginBottom: 10 }}>
                 <TopicChip topic={q.topic} small /><Difficulty d={q.difficulty} />
               </div>
               <h3 style={{ fontSize: 17, margin: "0 0 14px", letterSpacing: "-.01em", lineHeight: 1.35, textWrap: "pretty" }}>{q.q}</h3>
-              {V && <V />}
-              <div className="explain" style={{ marginTop: 14 }}>{q.explain}</div>
+              {V && <div style={{ marginBottom: 14 }}><V /></div>}
+              <div className="explain">{q.explain}</div>
             </div>
           );
         })}
