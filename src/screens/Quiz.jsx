@@ -57,7 +57,7 @@ export function QuizScreen({ ctx }) {
         </div>
       </div>
 
-      <div style={{ maxWidth: 760, margin: "0 auto", padding: "26px 20px 60px" }}>
+      <div style={{ maxWidth: 760, margin: "0 auto", padding: "26px 20px calc(130px + env(safe-area-inset-bottom))" }}>
         <div className="fade-in" key={q.id}>
           <div style={{ display: "flex", alignItems: "center", gap: 9, marginBottom: 14 }}>
             <TopicChip topic={q.topic} small />
@@ -105,7 +105,7 @@ export function QuizScreen({ ctx }) {
 
       {/* footer nav */}
       <div style={{ position: "sticky", bottom: 0, background: "rgba(10,10,10,.9)", backdropFilter: "blur(12px)", borderTop: "1px solid var(--border)" }}>
-        <div style={{ maxWidth: 760, margin: "0 auto", padding: "13px 20px", display: "flex", alignItems: "center", gap: 12 }}>
+        <div style={{ maxWidth: 760, margin: "0 auto", padding: "13px 20px calc(13px + env(safe-area-inset-bottom))", display: "flex", alignItems: "center", gap: 12 }}>
           {!instant && <Btn variant="sec" disabled={idx === 0} onClick={() => setIdx((i) => i - 1)} icon={<I.arrowL size={16} />}>Назад</Btn>}
           <div style={{ flex: 1 }} />
           {instant

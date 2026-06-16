@@ -48,7 +48,7 @@ body{
   font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;
   overflow:hidden;letter-spacing:-.005em;
 }
-#root{height:100vh;position:relative;z-index:1}
+#root{height:100vh;height:100dvh;position:relative;z-index:1}
 button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
 input{font-family:inherit}
 ::selection{background:var(--ac-line);color:#fff}
@@ -78,7 +78,7 @@ input{font-family:inherit}
 *::-webkit-scrollbar-track{background:transparent}
 
 /* ===== app shell (transparent so aurora shows through) ===== */
-.app{display:flex;height:100vh;overflow:hidden}
+.app{display:flex;height:100vh;height:100dvh;overflow:hidden}
 .app.mobile{flex-direction:column}
 
 .sidebar{
@@ -114,7 +114,7 @@ input{font-family:inherit}
 .wrap{max-width:1140px;margin:0 auto;padding:36px 28px 90px}
 .wrap-wide{max-width:1320px}
 
-.mobile .content{padding-bottom:78px}
+.mobile .content{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 .mobile .wrap{padding:20px 16px 28px}
 .tabbar{position:fixed;bottom:0;left:0;right:0;height:64px;background:rgba(8,9,13,.8);
   backdrop-filter:blur(22px);border-top:1px solid var(--border);display:flex;z-index:40;
