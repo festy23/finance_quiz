@@ -8,8 +8,9 @@ import { SectionTitle } from './Dashboard.jsx'
 
 /* ============ QUIZ RUNNER ============ */
 export function QuizScreen({ ctx }) {
-  const { quiz } = ctx;                 // {mode, questions, topic}
-  const instant = C.modes[quiz.mode].feedback === "instant";
+  const { quiz } = ctx;                 // {mode, questions, topic, reveal}
+  // Режим показа выбирается пользователем (reveal); fallback — настройка режима.
+  const instant = quiz.reveal ? quiz.reveal === "instant" : C.modes[quiz.mode].feedback === "instant";
   const [idx, setIdx] = useState(0);
   const [answers, setAnswers] = useState({});   // qid -> [idx]
   const [checked, setChecked] = useState({});    // qid -> true (instant reveal)
@@ -111,7 +112,7 @@ export function QuizScreen({ ctx }) {
             ? (showReveal
               ? <Btn variant="pri" lg onClick={next} icon={!last && <I.arrowR size={16} />}>{last ? "Завершить" : "Дальше"}</Btn>
               : <span style={{ fontSize: 12.5, color: "var(--tx-3)" }}>{q.multi ? "Выберите варианты" : "Выберите ответ"}</span>)
-            : <Btn variant="pri" lg disabled={!answered && !last} onClick={next} icon={!last && <I.arrowR size={16} />}>{last ? "Завершить экзамен" : "Далее"}</Btn>}
+            : <Btn variant="pri" lg disabled={!answered && !last} onClick={next} icon={!last && <I.arrowR size={16} />}>{last ? "Завершить" : "Далее"}</Btn>}
         </div>
       </div>
     </div>

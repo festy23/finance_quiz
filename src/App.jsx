@@ -77,14 +77,14 @@ export default function App({ initialUser, initialStore }) {
     },
     openLearn: (tid) => { setLearnTopic(tid); nav("learn"); },
     confirmExit: () => nav("dashboard"),
-    startQuiz: (mode, topic) => {
+    startQuiz: (mode, topic, reveal = "instant") => {
       let qs;
       if (mode === "repeat") { qs = ctx.wrongIdList(); if (!qs.length) qs = C.questions; qs = QData.shuffle(qs).slice(0, C.modes.repeat.count); }
       else { const pool = topic ? QData.byTopic(topic) : C.questions; const m = C.modes[mode]; qs = QData.shuffle(pool); if (m.count) qs = qs.slice(0, m.count); }
       qs = qs.map(withShuffledOptions);
-      setQuiz({ mode, topic, questions: qs }); nav("quiz");
+      setQuiz({ mode, topic, questions: qs, reveal }); nav("quiz");
     },
-    startRepeatFrom: (ids) => { const qs = QData.shuffle(ids.map((i) => QData.question(i)).filter(Boolean)).map(withShuffledOptions); setQuiz({ mode: "repeat", topic: null, questions: qs }); nav("quiz"); },
+    startRepeatFrom: (ids, reveal = "instant") => { const qs = QData.shuffle(ids.map((i) => QData.question(i)).filter(Boolean)).map(withShuffledOptions); setQuiz({ mode: "repeat", topic: null, questions: qs, reveal }); nav("quiz"); },
     finishQuiz: (qz, answers) => {
       let score = 0; const perTopic = {}; const wrongQ = []; const qstats = { ...store.qstats }; const wrong = new Set(store.wrong);
       qz.questions.forEach((q) => {

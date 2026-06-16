@@ -12,6 +12,7 @@ import { Difficulty } from './Quiz.jsx'
 export function ModesScreen({ ctx }) {
   const [mode, setMode] = useState("full");
   const [topic, setTopic] = useState(null);
+  const [reveal, setReveal] = useState("instant");   // instant = показывать ответ сразу, strict = без показа
   const m = C.modes[mode];
   const pool = topic ? QData.byTopic(topic) : C.questions;
   const count = m.count ? Math.min(m.count, pool.length) : pool.length;
@@ -48,13 +49,24 @@ export function ModesScreen({ ctx }) {
         </div>
       </>}
 
+      <SectionTitle>Показ ответов</SectionTitle>
+      <div className="seg" style={{ marginBottom: 8, maxWidth: 420, width: "100%" }}>
+        <button className={reveal === "instant" ? "on" : ""} style={{ flex: 1 }} onClick={() => setReveal("instant")}>Сразу показывать</button>
+        <button className={reveal === "strict" ? "on" : ""} style={{ flex: 1 }} onClick={() => setReveal("strict")}>Строгий режим</button>
+      </div>
+      <p style={{ fontSize: 12.5, color: "var(--tx-3)", marginTop: 0, marginBottom: 28, lineHeight: 1.5 }}>
+        {reveal === "instant"
+          ? "После каждого ответа сразу видно, верно или нет, с разбором и графиком."
+          : "Ответы и разбор не показываются по ходу — проверка только в конце, как на экзамене."}
+      </p>
+
       <div className="card card-pad" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16 }}>
         <div style={{ display: "flex", gap: 26 }}>
           <Stat val={mode === "repeat" ? Math.min(m.count, wrongCount) : count} label="вопросов" />
-          <Stat val={m.feedback === "instant" ? "сразу" : "в конце"} label="проверка" color="var(--tx-2)" />
+          <Stat val={reveal === "instant" ? "сразу" : "строгий"} label="проверка" color="var(--tx-2)" />
           <Stat val={topic && mode !== "repeat" ? QData.topic(topic).short : "все"} label="блок" color="var(--tx-2)" />
         </div>
-        <Btn variant="pri" lg icon={<I.play size={16} fill />} onClick={() => ctx.startQuiz(mode, topic)}>Начать</Btn>
+        <Btn variant="pri" lg icon={<I.play size={16} fill />} onClick={() => ctx.startQuiz(mode, topic, reveal)}>Начать</Btn>
       </div>
     </div>
   );
