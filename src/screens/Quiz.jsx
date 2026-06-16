@@ -46,7 +46,7 @@ export function QuizScreen({ ctx }) {
   const t = QData.topic(q.topic);
 
   return (
-    <div className="content" style={{ overflowY: "auto" }}>
+    <div className="content" style={{ overflowY: "auto", paddingBottom: 0 }}>
       {/* progress header */}
       <div style={{ position: "sticky", top: 0, zIndex: 6, background: "rgba(10,10,10,.85)", backdropFilter: "blur(12px)", borderBottom: "1px solid var(--border)" }}>
         <div style={{ maxWidth: 760, margin: "0 auto", padding: "13px 20px", display: "flex", alignItems: "center", gap: 14 }}>
