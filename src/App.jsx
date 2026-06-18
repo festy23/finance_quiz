@@ -3,6 +3,7 @@ import React, { useState as uS, useEffect as uE, useMemo } from 'react'
 import { api } from './lib/api.js'
 import { C } from './lib/content.js'
 import { QData, computeStats, computeStreak, dayKey, isCorrect, withShuffledOptions } from './lib/quiz.js'
+import { buildMetrics, buildAchievements } from './lib/achievements.js'
 import { useTweaks, TweaksPanel, TweakSection, TweakColor, TweakRadio, TweakToggle } from './components/tweaks.jsx'
 import { I, Logo, Btn } from './components/ui.jsx'
 import Auth from './screens/Auth.jsx'
@@ -12,12 +13,18 @@ import { GlossaryScreen, TradeTestScreen } from './screens/Extra.jsx'
 import { QuizScreen, ResultScreen } from './screens/Quiz.jsx'
 import { ProfileScreen } from './screens/Profile.jsx'
 
-/* ---------- accent palettes (work with white button text) ---------- */
-const ACCENTS = {
-  "#3b76ff": { hi: "#5b8dff", dim: "rgba(59,118,255,.16)", line: "rgba(59,118,255,.45)" },
-  "#2563eb": { hi: "#4f86f0", dim: "rgba(37,99,235,.16)", line: "rgba(37,99,235,.45)" },
-  "#0ea5e9": { hi: "#38bdf8", dim: "rgba(14,165,233,.16)", line: "rgba(14,165,233,.45)" },
-};
+/* ---------- accent palette derived from any hex (works with white button text) ---------- */
+function hexToRgb(hex) {
+  const h = String(hex).replace('#', '');
+  const x = h.length === 3 ? h.replace(/./g, (c) => c + c) : h.padEnd(6, '0');
+  const n = parseInt(x.slice(0, 6), 16) || 0;
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+function paletteFor(hex) {
+  const [r, g, b] = hexToRgb(hex);
+  const hi = `rgb(${Math.min(255, r + 32)},${Math.min(255, g + 32)},${Math.min(255, b + 32)})`;
+  return { hi, dim: `rgba(${r},${g},${b},.16)`, line: `rgba(${r},${g},${b},.45)` };
+}
 const FONTS = {
   plex: "'IBM Plex Sans',system-ui,sans-serif",
   system: "-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif",
@@ -34,8 +41,10 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "vizInQuiz": true
 }/*EDITMODE-END*/;
 
-export default function App({ initialUser, initialStore }) {
-  const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+export default function App({ quizId, initialUser, initialStore, onExitQuiz }) {
+  // Акцент по умолчанию берём из манифеста квиза (C.accent); пользователь может переопределить в tweaks.
+  const tweakDefaults = useMemo(() => ({ ...TWEAK_DEFAULTS, accent: C.accent || TWEAK_DEFAULTS.accent }), []);
+  const [t, setTweak] = useTweaks(tweakDefaults);
   const [store, setStore] = uS(initialStore || EMPTY);
   const [screen, setScreen] = uS(initialUser ? "dashboard" : "auth");
   const [quiz, setQuiz] = uS(null);
@@ -57,7 +66,7 @@ export default function App({ initialUser, initialStore }) {
     nav,
     login: async () => {
       // сессия уже выставлена /api/auth/poll — остаётся подтянуть прогресс
-      const progress = await api.progress()
+      const progress = await api.progress(quizId)
       setStore(progress)
       setScreen("dashboard")
     },
@@ -73,7 +82,7 @@ export default function App({ initialUser, initialStore }) {
     recordTradeResult: (sc) => {
       const days = { ...store.days }; const k = dayKey(Date.now()); days[k] = (days[k] || 0) + C.tradetest.length;
       persist((s) => ({ days, ttBest: Math.max(s.ttBest || 0, sc), bestStreak: Math.max(s.bestStreak, computeStreak(days)) }));
-      api.saveTradeResult(sc).catch(() => {})
+      api.saveTradeResult(quizId, sc).catch(() => {})
     },
     openLearn: (tid) => { setLearnTopic(tid); nav("learn"); },
     confirmExit: () => nav("dashboard"),
@@ -98,7 +107,7 @@ export default function App({ initialUser, initialStore }) {
         qids: qz.questions.map((q) => q.id), answers, spark: qz.questions.map((q) => isCorrect(q, answers[q.id]) ? 100 : 20) };
       const days = { ...store.days }; const k = dayKey(Date.now()); days[k] = (days[k] || 0) + qz.questions.length;
       persist((s) => ({ attempts: [attempt, ...s.attempts].slice(0, 60), qstats, wrong: [...wrong], days, bestStreak: Math.max(s.bestStreak, computeStreak(days)) }));
-      api.saveAttempt({ mode: qz.mode, topic: qz.topic, qids: attempt.qids, answers, date: attempt.date }).catch(() => {})
+      api.saveAttempt(quizId, { mode: qz.mode, topic: qz.topic, qids: attempt.qids, answers, date: attempt.date }).catch(() => {})
       setLastResult({ quiz: qz, answers, score, total: qz.questions.length, perTopic, wrong: wrongQ }); nav("result");
     },
     reviewAttempt: (a) => {
@@ -115,24 +124,13 @@ export default function App({ initialUser, initialStore }) {
       return weeks;
     },
     achievements: () => {
-      const totA = C.topics.reduce((a, x) => a + stats[x.id].answered, 0);
-      const totC = C.topics.reduce((a, x) => a + stats[x.id].correct, 0);
-      const perfect = store.attempts.some((a) => a.score === a.total && a.total >= 5);
-      return [
-        { id: "first", name: "Первый шаг", desc: "Пройти первый квиз", icon: "play", c: "var(--ac)", got: store.attempts.length >= 1 },
-        { id: "ta", name: "Чартист", desc: "Освоить тех. анализ на 50%", icon: "trend", c: "var(--warn)", got: stats.ta.mastery >= 50 },
-        { id: "streak", name: "В ритме", desc: "Серия 3 дня", icon: "flame", c: "var(--down)", got: ctx.bestStreak() >= 3 },
-        { id: "perfect", name: "Без ошибок", desc: "100% в сессии 5+", icon: "target", c: "var(--ok)", got: perfect },
-        { id: "ten", name: "Десятка", desc: "50 ответов", icon: "layers", c: "var(--purple)", got: totA >= 50 || totA + 0 >= 50 },
-        { id: "scholar", name: "Эрудит", desc: "Освоить все блоки на 60%", icon: "brain", c: "var(--ac)", got: C.topics.every((x) => stats[x.id].mastery >= 60) },
-        { id: "fund", name: "Аналитик", desc: "Фунд. анализ 70%", icon: "chart", c: "var(--ac)", got: stats.fa.mastery >= 70 },
-        { id: "ace", name: "Снайпер", desc: "Точность 90%+", icon: "star", c: "var(--warn)", got: totA >= 10 && totC / totA >= .9 },
-      ];
+      const metrics = buildMetrics({ stats, topics: C.topics, attempts: store.attempts, bestStreak: ctx.bestStreak() });
+      return buildAchievements(C.achievements, metrics);
     },
   };
 
   /* tweak-driven theme vars */
-  const ac = ACCENTS[t.accent] || ACCENTS["#3b76ff"];
+  const ac = paletteFor(t.accent);
   const themeVars = {
     "--ac": t.accent, "--ac-hi": ac.hi, "--ac-dim": ac.dim, "--ac-line": ac.line,
     "--fs": FONTS[t.font] || FONTS.plex,
@@ -151,14 +149,15 @@ export default function App({ initialUser, initialStore }) {
     progress: { label: "Прогресс", icon: "chart" },
     history: { label: "История", icon: "history" },
   };
+  const feat = C.features || {};
   const GROUPS = [
     { items: ["dashboard"] },
-    { label: "Практика", items: ["modes", "tradetest"] },
-    { label: "Материалы", items: ["learn", "glossary"] },
+    { label: "Практика", items: ["modes", ...(feat.tradetest ? ["tradetest"] : [])] },
+    { label: "Материалы", items: ["learn", ...(feat.glossary ? ["glossary"] : [])] },
     { label: "Статистика", items: ["progress", "history"] },
   ];
-  const MOBILE_PRIMARY = ["dashboard", "modes", "tradetest", "learn"];
-  const MOBILE_MORE = ["glossary", "progress", "history"];
+  const MOBILE_PRIMARY = ["dashboard", "modes", ...(feat.tradetest ? ["tradetest"] : []), "learn"].slice(0, 4);
+  const MOBILE_MORE = [...(feat.glossary ? ["glossary"] : []), "progress", "history"];
   const titleOf = { ...Object.fromEntries(Object.entries(NAVMAP).map(([k, v]) => [k, v.label])), result: "Результат", quiz: "Квиз", profile: "Профиль" };
 
   const renderScreen = () => {
@@ -187,7 +186,9 @@ export default function App({ initialUser, initialStore }) {
     <div className={"app" + (isMobile ? " mobile" : "")} style={themeVars}>
       {!isMobile && (
         <aside className="sidebar">
-          <div className="brand"><Logo /><div><div className="brand-name">67quant</div><div className="brand-sub">finance quiz</div></div></div>
+          <div className="brand" onClick={onExitQuiz} style={{ cursor: "pointer" }} title="Все квизы">
+            <Logo /><div><div className="brand-name">{C.brand?.name}</div><div className="brand-sub">{C.brand?.sub}</div></div>
+          </div>
           {GROUPS.map((g, gi) => (
             <React.Fragment key={gi}>
               {g.label && <div className="nav-sec">{g.label}</div>}
@@ -236,6 +237,7 @@ export default function App({ initialUser, initialStore }) {
             {MOBILE_MORE.map((id) => { const n = NAVMAP[id]; return (
               <button key={id} onClick={() => nav(id)} style={{ width: "100%", display: "flex", alignItems: "center", gap: 13, padding: "13px 12px", borderRadius: "var(--r-sm)", color: screen === id ? "var(--ac-hi)" : "var(--tx)", fontSize: 15, fontWeight: 500, textAlign: "left" }}>{I[n.icon]({ size: 19 })}{n.label}</button>
             ); })}
+            <button onClick={onExitQuiz} style={{ width: "100%", display: "flex", alignItems: "center", gap: 13, padding: "13px 12px", borderRadius: "var(--r-sm)", color: "var(--tx-2)", fontSize: 15, fontWeight: 500, textAlign: "left" }}>{I.grid({ size: 19 })}Все квизы</button>
             <div className="divider" style={{ margin: "8px 0" }} />
             <button onClick={ctx.logout} style={{ width: "100%", display: "flex", alignItems: "center", gap: 13, padding: "13px 12px", borderRadius: "var(--r-sm)", color: "var(--tx-2)", fontSize: 15, fontWeight: 500, textAlign: "left" }}>{I.logout({ size: 19 })}Выйти</button>
           </div>

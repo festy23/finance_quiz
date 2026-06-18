@@ -23,3 +23,20 @@ export function computeStreak(daySet) {
   }
   return n
 }
+
+// Чистый подсчёт попытки. quiz.questions — массив {id, correct}.
+// Возвращает { score, spark, results:[{id, ok}] }. Неизвестные id — неверные.
+export function scoreAttempt(quiz, qids, answers) {
+  const byId = new Map(quiz.questions.map((q) => [q.id, q]))
+  let score = 0
+  const spark = []
+  const results = []
+  for (const id of qids) {
+    const q = byId.get(id)
+    const ok = !!q && isCorrect(q, answers[id])
+    if (ok) score++
+    spark.push(ok ? 100 : 20)
+    results.push({ id, ok })
+  }
+  return { score, spark, results }
+}
