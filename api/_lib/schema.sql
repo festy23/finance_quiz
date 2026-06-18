@@ -66,3 +66,25 @@ create table if not exists login_tokens (
 );
 
 alter table login_tokens add column if not exists browser_hash text;
+
+-- ── multi-quiz namespacing ───────────────────────────────────────────────
+-- Существующие строки = финансовый квиз; новым колонкам ставим default 'finance'.
+
+alter table attempts add column if not exists quiz_id text not null default 'finance';
+create index if not exists attempts_user_quiz_idx on attempts(user_id, quiz_id, created_at desc);
+
+alter table qstats add column if not exists quiz_id text not null default 'finance';
+alter table qstats drop constraint if exists qstats_pkey;
+alter table qstats add primary key (user_id, quiz_id, question_id);
+
+alter table wrong add column if not exists quiz_id text not null default 'finance';
+alter table wrong drop constraint if exists wrong_pkey;
+alter table wrong add primary key (user_id, quiz_id, question_id);
+
+alter table days add column if not exists quiz_id text not null default 'finance';
+alter table days drop constraint if exists days_pkey;
+alter table days add primary key (user_id, quiz_id, day);
+
+alter table user_meta add column if not exists quiz_id text not null default 'finance';
+alter table user_meta drop constraint if exists user_meta_pkey;
+alter table user_meta add primary key (user_id, quiz_id);
