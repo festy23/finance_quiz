@@ -1,19 +1,25 @@
-# 67quant — тренажёр по финансам
+# Квиз-платформа (finance + matstat)
 
-Финансовый квиз-тренажёр. Frontend — Vite + React (SPA), backend — Vercel serverless-функции (`/api`), хранилище — Neon Postgres. **Авторизация только через Telegram** (deep-link бот).
+Платформа квиз-тренажёров. Frontend — Vite + React (SPA), backend — Vercel serverless-функции (`/api`), хранилище — Neon Postgres. **Авторизация только через Telegram** (deep-link бот). Каждый квиз — самодостаточный контент-модуль; прогресс пользователя разделён по `quiz_id`.
 
 ## Архитектура
 
-- `src/` — SPA (React 18). Контент квиза грузится с `/api/content`, прогресс — с `/api/progress`.
+- `src/` — SPA (React 18). `Root` роутит каталог (`/`) ↔ квиз (`/<quizId>`). Контент квиза грузится с `/api/content?quiz=<id>`, прогресс — с `/api/progress?quiz=<id>`.
 - `api/` — serverless-функции (Node, ESM):
-  - `content.js` — отдаёт вопросы/словарь/трейд-тест.
-  - `auth/telegram.js` · `auth/me.js` · `auth/logout.js` — вход через Telegram, сессия в httpOnly-cookie (JWT).
-  - `progress.js` · `attempts.js` · `tradetest-result.js` — прогресс пользователя (сервер-авторитетный пересчёт = анти-чит).
-  - `_lib/` — db (Neon), auth (JWT/cookie), telegram (проверка подписи виджета), quiz (серверные хелперы), schema.sql.
-  - `_data/` — статический контент квиза (ESM).
-- `test/` — unit-тесты (Vitest): подпись Telegram, JWT/cookie, quiz-хелперы, сборка стора.
+  - `quizzes.js` — каталог квизов; `content.js` — контент одного квиза.
+  - `_data/registry.js` — реестр квизов; `_data/<quizId>/manifest.js` — манифест квиза (бренд, акцент, фичи, топики, вопросы, словарь, ачивки).
+  - `auth/*` — вход через Telegram (сессия в httpOnly-cookie, JWT), quiz-agnostic.
+  - `progress.js` · `attempts.js` · `tradetest-result.js` — прогресс пользователя по конкретному квизу (сервер-авторитетный пересчёт).
+  - `_lib/` — db (Neon), auth, telegram, quiz-хелперы (`scoreAttempt`), schema.sql.
+- `test/` — unit-тесты (Vitest).
 
-Подробный план реализации: `docs/superpowers/plans/2026-06-15-finance-quiz-telegram.md`.
+### Как добавить новый квиз
+1. Создать `api/_data/<id>/{questions.js, glossary.js, achievements.js, manifest.js}`.
+2. Зарегистрировать манифест в `api/_data/registry.js`.
+3. (Опционально) добавить viz в `src/components/viz/` и подмешать в `src/components/viz/index.js`.
+Никаких изменений в БД-схеме не требуется — namespacing по `quiz_id` уже общий.
+
+Подробный план реализации: `docs/superpowers/plans/2026-06-18-multi-quiz-platform.md`.
 
 ## Локальная разработка
 
