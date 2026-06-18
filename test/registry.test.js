@@ -1,0 +1,28 @@
+import { describe, it, expect } from 'vitest'
+import { listQuizzes, getQuiz, DEFAULT_QUIZ } from '../api/_data/registry.js'
+
+describe('quiz registry', () => {
+  it('DEFAULT_QUIZ is finance', () => {
+    expect(DEFAULT_QUIZ).toBe('finance')
+  })
+
+  it('listQuizzes returns lightweight catalog entries with counts', () => {
+    const list = listQuizzes()
+    const finance = list.find((q) => q.id === 'finance')
+    expect(finance).toBeTruthy()
+    expect(finance.title).toBeTruthy()
+    expect(finance.questionCount).toBeGreaterThan(0)
+    expect(finance.topicCount).toBeGreaterThan(0)
+    // каталог не должен тащить тяжёлые массивы
+    expect(finance.questions).toBeUndefined()
+    expect(finance.glossary).toBeUndefined()
+  })
+
+  it('getQuiz returns full manifest or null', () => {
+    const q = getQuiz('finance')
+    expect(q.questions.length).toBeGreaterThan(0)
+    expect(q.modes.full).toBeTruthy()
+    expect(q.achievements.length).toBeGreaterThan(0)
+    expect(getQuiz('nope')).toBeNull()
+  })
+})
