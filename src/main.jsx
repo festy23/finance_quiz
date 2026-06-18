@@ -1,13 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App.jsx'
+import Root from './screens/Root.jsx'
 import { api } from './lib/api.js'
-import { initContent } from './lib/content.js'
 import './styles.css'
 
 // Telegram Login Widget привязан к одному домену (financequiz-gamma.vercel.app).
-// Любой другой *.vercel.app адрес (длинный URL конкретного деплоя, www-вариант)
-// даёт "Bot domain invalid". Канонизируем хост, чтобы вход работал всегда.
+// Любой другой *.vercel.app адрес даёт "Bot domain invalid". Канонизируем хост.
 const CANONICAL_HOST = 'financequiz-gamma.vercel.app'
 if (
   typeof location !== 'undefined' &&
@@ -18,18 +16,9 @@ if (
 }
 
 async function boot() {
-  // Контент нужен синхронно экранам — грузим до первого рендера.
-  const content = await api.content()
-  initContent(content)
+  // Сессия Telegram глобальна — грузим один раз. Контент квиза подгрузит Root по роуту.
   const me = await api.me() // { user } или null
-  // Прогресс не должен ронять загрузку: при сбое входим как есть (на экран авторизации).
-  let progress = null
-  if (me) {
-    try { progress = await api.progress() } catch { progress = null }
-  }
-  ReactDOM.createRoot(document.getElementById('root')).render(
-    <App initialUser={me?.user || null} initialStore={progress} />
-  )
+  ReactDOM.createRoot(document.getElementById('root')).render(<Root initialMe={me} />)
 }
 
 function fatal(message) {

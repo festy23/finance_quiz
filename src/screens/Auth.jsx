@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Logo, Btn, I } from '../components/ui.jsx'
 import { TVChart, anchorsToCloses, genCandles } from '../components/charts.jsx'
 import { api } from '../lib/api.js'
+import { C } from '../lib/content.js'
 
 // Вход через deep-link в бота:
 //  1) /api/auth/start → одноразовый токен + ссылка t.me/<bot>?start=<token>
@@ -61,8 +62,8 @@ export default function Auth({ onLogin }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 11, marginBottom: 22 }}>
           <Logo size={34} />
           <div>
-            <div className="brand-name" style={{ fontSize: 16 }}>67quant</div>
-            <div className="brand-sub">тренажёр по финансам</div>
+            <div className="brand-name" style={{ fontSize: 16 }}>{C.brand?.name}</div>
+            <div className="brand-sub">{C.brand?.sub}</div>
           </div>
         </div>
         <h2 style={{ margin: '0 0 8px', fontSize: 22, letterSpacing: '-.02em' }}>Вход через Telegram</h2>
