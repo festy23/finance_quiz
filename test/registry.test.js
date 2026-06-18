@@ -25,4 +25,13 @@ describe('quiz registry', () => {
     expect(q.achievements.length).toBeGreaterThan(0)
     expect(getQuiz('nope')).toBeNull()
   })
+
+  it('matstat зарегистрирован, без tradetest', () => {
+    const list = listQuizzes()
+    expect(list.map((q) => q.id)).toContain('matstat')
+    const ms = getQuiz('matstat')
+    expect(ms.features.tradetest).toBe(false)
+    expect(ms.questions.length).toBeGreaterThanOrEqual(5)
+    expect(ms.glossary.length).toBeGreaterThanOrEqual(10)
+  })
 })

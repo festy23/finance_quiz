@@ -1,7 +1,8 @@
 import { financeQuiz } from './finance/manifest.js'
+import { matstatQuiz } from './matstat/manifest.js'
 
 // Порядок здесь = порядок карточек в каталоге.
-const QUIZZES = [financeQuiz]
+const QUIZZES = [financeQuiz, matstatQuiz]
 const BY_ID = new Map(QUIZZES.map((q) => [q.id, q]))
 
 export const DEFAULT_QUIZ = 'finance'
