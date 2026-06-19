@@ -55,7 +55,8 @@ export function Chip({children,color,bg,style}){
   return <span className="chip" style={{color:color||'var(--tx-2)',background:bg||'var(--panel-3)',...style}}>{children}</span>;
 }
 export function TopicChip({topic,small}){
-  const t = QData.topic(topic);
+  // Фолбэк, если тема не найдена — чтобы один битый topic не ронял весь рендер.
+  const t = QData.topic(topic) || {color:'var(--tx-3)',short:topic||'—',name:topic||'—'};
   return <span className="chip" style={{background:'var(--glass-2)',color:'var(--tx-2)',border:'1px solid var(--border)',...(small?{height:21,fontSize:10.5,padding:'0 8px'}:null)}}>
     <span className="badge-dot" style={{background:t.color,width:6,height:6,boxShadow:`0 0 6px ${t.color}`}}/>{small?t.short:t.name}</span>;
 }

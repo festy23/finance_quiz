@@ -5,6 +5,7 @@ import katex from 'katex'
 import { QUESTIONS, TOPICS } from '../api/_data/matstat/questions.js'
 import { FLASHCARDS } from '../api/_data/matstat/flashcards.js'
 import { FORMULAS } from '../api/_data/matstat/formulas.js'
+import { GLOSSARY } from '../api/_data/matstat/glossary.js'
 import { splitMath } from '../src/lib/mathtext.js'
 
 const TOPIC_IDS = new Set(TOPICS.map((t) => t.id))
@@ -50,6 +51,12 @@ describe('matstat content bank', () => {
       expect(() => katex.renderToString(f.latex, { displayMode: true, throwOnError: true }),
         `formula ${f.id}: ${f.latex}`).not.toThrow()
       if (f.figure) expect(figExists(f.figure), `нет figure ${f.figure} у ${f.id}`).toBe(true)
+    }
+  })
+
+  it('все термины словаря ссылаются на существующую тему', () => {
+    for (const g of GLOSSARY) {
+      expect(TOPIC_IDS.has(g.topic), `словарь «${g.t}» → несуществующая тема ${g.topic}`).toBe(true)
     }
   })
 
