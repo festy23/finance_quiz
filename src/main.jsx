@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client'
 import Root from './screens/Root.jsx'
 import { api } from './lib/api.js'
 import './styles.css'
+import 'katex/dist/katex.min.css'
 
 // Telegram Login Widget привязан к одному домену (financequiz-gamma.vercel.app).
 // Любой другой *.vercel.app адрес даёт "Bot domain invalid". Канонизируем хост.
