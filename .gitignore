@@ -5,3 +5,5 @@ dist
 !.env.example
 .vercel
 .DS_Store
+scripts/figures/.venv/
+scripts/figures/__pycache__/

@@ -12,6 +12,8 @@ import { ModesScreen, LearnScreen, ProgressScreen, HistoryScreen } from './scree
 import { GlossaryScreen, TradeTestScreen } from './screens/Extra.jsx'
 import { QuizScreen, ResultScreen } from './screens/Quiz.jsx'
 import { ProfileScreen } from './screens/Profile.jsx'
+import { FlashcardsScreen } from './screens/Flashcards.jsx'
+import { FormulasScreen } from './screens/Formulas.jsx'
 
 /* ---------- accent palette derived from any hex (works with white button text) ---------- */
 function hexToRgb(hex) {
@@ -146,6 +148,8 @@ export default function App({ quizId, initialUser, initialStore, onExitQuiz }) {
     tradetest: { label: "Трейд-тест", icon: "trend" },
     learn: { label: "Изучение", icon: "brain" },
     glossary: { label: "Словарь", icon: "book" },
+    flashcards: { label: "Карточки", icon: "layers" },
+    formulas: { label: "Формулы", icon: "book" },
     progress: { label: "Прогресс", icon: "chart" },
     history: { label: "История", icon: "history" },
   };
@@ -153,11 +157,11 @@ export default function App({ quizId, initialUser, initialStore, onExitQuiz }) {
   const GROUPS = [
     { items: ["dashboard"] },
     { label: "Практика", items: ["modes", ...(feat.tradetest ? ["tradetest"] : [])] },
-    { label: "Материалы", items: ["learn", ...(feat.glossary ? ["glossary"] : [])] },
+    { label: "Материалы", items: ["learn", ...(feat.flashcards ? ["flashcards"] : []), ...(feat.formulas ? ["formulas"] : []), ...(feat.glossary ? ["glossary"] : [])] },
     { label: "Статистика", items: ["progress", "history"] },
   ];
   const MOBILE_PRIMARY = ["dashboard", "modes", ...(feat.tradetest ? ["tradetest"] : []), "learn"].slice(0, 4);
-  const MOBILE_MORE = [...(feat.glossary ? ["glossary"] : []), "progress", "history"];
+  const MOBILE_MORE = [...(feat.flashcards ? ["flashcards"] : []), ...(feat.formulas ? ["formulas"] : []), ...(feat.glossary ? ["glossary"] : []), "progress", "history"];
   const titleOf = { ...Object.fromEntries(Object.entries(NAVMAP).map(([k, v]) => [k, v.label])), result: "Результат", quiz: "Квиз", profile: "Профиль" };
 
   const renderScreen = () => {
@@ -167,6 +171,8 @@ export default function App({ quizId, initialUser, initialStore, onExitQuiz }) {
       case "modes": return <ModesScreen ctx={ctx} />;
       case "tradetest": return <TradeTestScreen ctx={ctx} />;
       case "learn": return <LearnScreen ctx={{ ...ctx, learnTopic }} />;
+      case "flashcards": return <FlashcardsScreen ctx={ctx} />;
+      case "formulas": return <FormulasScreen ctx={ctx} />;
       case "glossary": return <GlossaryScreen ctx={ctx} />;
       case "progress": return <ProgressScreen ctx={ctx} />;
       case "history": return <HistoryScreen ctx={ctx} />;

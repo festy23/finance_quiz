@@ -2,6 +2,8 @@
 import React, { useState, useMemo } from 'react'
 import { I, Btn, Chip, TopicChip, Pbar, Stat, Ring, Spark, Bars } from '../components/ui.jsx'
 import { VIZ } from '../components/viz/index.js'
+import { RichText } from '../components/Tex.jsx'
+import { Figure } from '../components/Figure.jsx'
 import { C } from '../lib/content.js'
 import { QData } from '../lib/quiz.js'
 import { rel } from '../lib/format.js'
@@ -99,9 +101,10 @@ export function LearnScreen({ ctx }) {
               <div style={{ display: "flex", alignItems: "center", gap: 9, marginBottom: 10 }}>
                 <TopicChip topic={q.topic} small /><Difficulty d={q.difficulty} />
               </div>
-              <h3 style={{ fontSize: 17, margin: "0 0 14px", letterSpacing: "-.01em", lineHeight: 1.35, textWrap: "pretty" }}>{q.q}</h3>
+              <h3 style={{ fontSize: 17, margin: "0 0 14px", letterSpacing: "-.01em", lineHeight: 1.35, textWrap: "pretty" }}><RichText text={q.q} /></h3>
               {V && <div style={{ marginBottom: 14 }}><V /></div>}
-              <div className="explain">{q.explain}</div>
+              {q.figure && <div style={{ marginBottom: 14 }}><Figure name={q.figure} caption={q.figureCaption} /></div>}
+              <div className="explain"><RichText text={q.explain} /></div>
             </div>
           );
         })}
