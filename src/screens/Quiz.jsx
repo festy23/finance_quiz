@@ -182,7 +182,7 @@ function ReviewItem({ q, ans, open }) {
     <div className="card" style={{ overflow: "hidden" }}>
       <button onClick={() => setEx((s) => !s)} style={{ width: "100%", display: "flex", alignItems: "flex-start", gap: 12, padding: 16, textAlign: "left" }}>
         <span style={{ flex: "0 0 24px", height: 24, borderRadius: 7, display: "grid", placeItems: "center", background: ok ? "var(--ok-dim)" : "var(--bad-dim)", color: ok ? "var(--ok)" : "var(--bad)" }}>{ok ? <I.check size={14} /> : <I.x size={14} />}</span>
-        <span style={{ flex: 1, fontSize: 14.5, lineHeight: 1.4 }}>{q.q}</span>
+        <span style={{ flex: 1, fontSize: 14.5, lineHeight: 1.4 }}><RichText text={q.q} /></span>
         <I.chevR size={16} style={{ color: "var(--tx-3)", transform: show ? "rotate(90deg)" : "none", transition: ".2s", flex: "0 0 16px", marginTop: 3 }} />
       </button>
       {show && (

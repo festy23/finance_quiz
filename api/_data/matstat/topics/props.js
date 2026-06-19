@@ -81,15 +81,15 @@ export const questions = [
   },
   {
     id: "props7", topic: "props", difficulty: 2,
-    q: "Для геометрического распределения $\\mathrm{P}(X=k)=\\theta^k(1-\\theta)$ информация Фишера равна…",
+    q: "Для геометрического распределения $\\mathrm{P}(X=k)=\\left(1-\\frac{1}{\\theta}\\right)^{k-1}\\frac{1}{\\theta}$, $k=1,2,\\dots$, где $\\theta=\\mathrm{M}X>1$ — среднее, информация Фишера $I(\\theta)$ равна…",
     options: [
-      "$\\dfrac{1}{\\theta(1-\\theta)}$",
+      "$\\dfrac{1}{\\theta(\\theta-1)}$",
       "$\\dfrac{1}{\\theta^2}$",
-      "$\\dfrac{1}{(1-\\theta)^2}$",
-      "$\\theta(1-\\theta)$",
+      "$\\dfrac{1}{\\theta(1-\\theta)}$",
+      "$\\theta(\\theta-1)$",
     ],
     correct: [0], multi: false,
-    explain: "$\\ln f = k\\ln\\theta + \\ln(1-\\theta)$; производная $\\partial_\\theta\\ln f = \\frac{k}{\\theta}-\\frac{1}{1-\\theta}$; после вычисления $\\mathrm{M}[(\\partial_\\theta\\ln f)^2]$ получаем $I(\\theta)=\\frac{1}{\\theta(1-\\theta)}$. Граница = $\\theta(1-\\theta)/n = \\mathrm{D}\\bar X$ — $\\bar X$ эффективна.",
+    explain: "При параметризации через среднее $\\theta=\\mathrm{M}X$: $\\ln f = (k-1)\\ln\\!\\left(1-\\tfrac{1}{\\theta}\\right) - \\ln\\theta$; производная $\\partial_\\theta\\ln f = \\frac{k-1}{\\theta(\\theta-1)}-\\frac{1}{\\theta}$; после вычисления $\\mathrm{M}[(\\partial_\\theta\\ln f)^2]$ получаем $I(\\theta)=\\frac{1}{\\theta(\\theta-1)}$. Дисперсия $\\mathrm{D}X=\\theta(\\theta-1)$, поэтому $\\mathrm{D}\\bar X=\\frac{\\theta(\\theta-1)}{n}=\\frac{1}{nI(\\theta)}$ — $\\bar X$ эффективна.",
   },
   {
     id: "props8", topic: "props", difficulty: 2,
@@ -120,15 +120,15 @@ export const questions = [
   // ── difficulty 3 ────────────────────────────────────────────────────────
   {
     id: "props10", topic: "props", difficulty: 3,
-    q: "Для оценки $\\hat\\theta=\\bar X\\cdot\\frac{N-\\bar X}{N}$ параметра $\\theta$ биномиального $\\mathrm{Bin}(N,\\theta)$ (по выборке из $n$ копий) математическое ожидание равно…",
+    q: "Пусть $X_1,\\dots,X_n\\sim\\mathrm{Bin}(N,p)$ — выборка из $n$ копий. Оцениваем $\\theta=\\mathrm{D}\\{X\\}=Np(1-p)$ оценкой $\\hat\\theta_n=\\dfrac{\\bar X_n(N-\\bar X_n)}{N}$. Математическое ожидание $\\mathrm{M}\\{\\hat\\theta_n\\}$ равно…",
     options: [
       "$\\theta\\!\\left(1-\\frac{1}{nN}\\right)$ — асимптотически несмещённая",
       "$\\theta$ — точно несмещённая",
-      "$\\theta(1-\\theta)$ — смещение зависит от $\\theta$",
+      "$Np(1-p)\\cdot\\frac{N-1}{N}$ — смещение не зависит от $n$",
       "$\\frac{N-1}{N}\\theta$",
     ],
     correct: [0], multi: false,
-    explain: "$\\mathrm{M}[\\bar X^2]=\\mathrm{D}\\bar X+(\\mathrm{M}\\bar X)^2=\\frac{N\\theta(1-\\theta)}{n}+(N\\theta)^2$. Подставляя: $\\mathrm{M}\\hat\\theta=\\theta-\\frac{\\theta(1-\\theta)}{nN}=\\theta\\left(1-\\frac{1}{nN}\\right)\\to\\theta$ при $n\\to\\infty$.",
+    explain: "Обозначим $\\theta=Np(1-p)=\\mathrm{D}X$. Тогда $\\mathrm{M}\\bar X=Np$, $\\mathrm{D}\\bar X=\\frac{Np(1-p)}{n}=\\frac{\\theta}{n}$, $\\mathrm{M}[\\bar X^2]=\\mathrm{D}\\bar X+(\\mathrm{M}\\bar X)^2=\\frac{\\theta}{n}+(Np)^2$. Подставляя в $\\hat\\theta_n=\\frac{\\bar X(N-\\bar X)}{N}=p\\bar X-\\frac{\\bar X^2}{N}$: $\\mathrm{M}\\hat\\theta_n=N p^2+p(1-p)-\\frac{1}{N}\\!\\left(\\frac{\\theta}{n}+(Np)^2\\right)=Np(1-p)-\\frac{\\theta}{nN}=\\theta\\!\\left(1-\\frac{1}{nN}\\right)\\to\\theta$ при $n\\to\\infty$ — оценка асимптотически несмещённая.",
   },
   {
     id: "props11", topic: "props", difficulty: 3,
@@ -183,8 +183,8 @@ export const flashcards = [
   },
   {
     id: "fc_props_8", topic: "props",
-    front: "Информация Фишера геометрического распределения $\\mathrm{P}(X=k)=\\theta^k(1-\\theta)$?",
-    back: "$I(\\theta)=\\dfrac{1}{\\theta(1-\\theta)}$, граница Рао–Крамера $=\\theta(1-\\theta)/n = \\mathrm{D}\\bar X$ — $\\bar X$ эффективна.",
+    front: "Информация Фишера геометрического распределения $\\mathrm{P}(X=k)=\\left(1-\\frac{1}{\\theta}\\right)^{k-1}\\frac{1}{\\theta}$, где $\\theta=\\mathrm{M}X$?",
+    back: "$I(\\theta)=\\dfrac{1}{\\theta(\\theta-1)}$; $\\mathrm{D}X=\\theta(\\theta-1)$, поэтому $\\mathrm{D}\\bar X=\\dfrac{\\theta(\\theta-1)}{n}=\\dfrac{1}{nI(\\theta)}$ — $\\bar X$ эффективна.",
   },
   {
     id: "fc_props_9", topic: "props",
@@ -228,9 +228,9 @@ export const formulas = [
   },
   {
     id: "fm_props_6", topic: "props",
-    name: "Информация Фишера: геометрическое распределение",
-    latex: "I(\\theta) = \\frac{1}{\\theta(1-\\theta)}, \\qquad \\mathrm{D}\\bar X = \\frac{\\theta(1-\\theta)}{n} = \\frac{1}{nI(\\theta)}",
-    note: "$\\bar X$ — эффективная оценка $\\theta$ для геометрического распределения.",
+    name: "Информация Фишера: геометрическое распределение (параметризация через среднее)",
+    latex: "I(\\theta) = \\frac{1}{\\theta(\\theta-1)}, \\qquad \\mathrm{D}\\bar X = \\frac{\\theta(\\theta-1)}{n} = \\frac{1}{nI(\\theta)}",
+    note: "$\\mathrm{P}(X=k)=\\left(1-\\frac{1}{\\theta}\\right)^{k-1}\\frac{1}{\\theta}$, $\\theta=\\mathrm{M}X>1$, $\\mathrm{D}X=\\theta(\\theta-1)$. $\\bar X$ — эффективная оценка $\\theta$.",
   },
   {
     id: "fm_props_7", topic: "props",

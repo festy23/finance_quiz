@@ -66,7 +66,7 @@ export const flashcards = [
 export const formulas = [
   { id: "fm_order_1", topic: "order", name: "ФР минимума и максимума",
     latex: "F_{(1)}(x)=1-(1-F(x))^n,\\qquad F_{(n)}(x)=F(x)^n",
-    note: "Минимум: хотя бы один $\\ge x$; максимум: все $< x$.", figure: "order_max_uniform", figureCaption: "ФР максимума для U[0,θ]" },
+    note: "Минимум: хотя бы один $<x$ (= $1-\\mathrm P(\\text{все}\\ge x)$); максимум: все $<x$.", figure: "order_max_uniform", figureCaption: "ФР максимума для U[0,θ]" },
   { id: "fm_order_2", topic: "order", name: "ФР k-й порядковой статистики",
     latex: "F_{(k)}(x)=\\sum_{m=k}^{n}\\binom{n}{m}F(x)^m(1-F(x))^{n-m}=I_{F(x)}(k,\\,n-k+1)",
     note: "Число элементов $<x$ имеет $\\mathrm{Bin}(n,F(x))$; $I_x$ — неполная бета-функция.", figure: "order_cdf_k", figureCaption: "F_(k) для U[0,1], n=10" },

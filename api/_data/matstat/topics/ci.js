@@ -23,9 +23,9 @@ export const questions = [
     id: "ci2", topic: "ci", difficulty: 2,
     figure: "ci_len_vs_n", figureCaption: "Длина ДИ vs n, отметка n_min",
     q: "Для той же задачи ($\\sigma^2=4$, $\\gamma=0.8$, $z_{0.9}=1.282$) найдите минимальный объём выборки, чтобы полуширина ДИ не превышала $\\varepsilon=0.05$.",
-    options: ["$n_{\\min}=2629$", "$n_{\\min}=657$", "$n_{\\min}=1537$", "$n_{\\min}=3842$"],
+    options: ["$n_{\\min}=2628$", "$n_{\\min}=657$", "$n_{\\min}=1537$", "$n_{\\min}=3842$"],
     correct: [0], multi: false,
-    explain: "$n_{\\min}=\\left\\lceil\\left(\\dfrac{z_{0.9}\\cdot\\sigma}{\\varepsilon}\\right)^2\\right\\rceil=\\left\\lceil\\left(\\dfrac{1.282\\cdot2}{0.05}\\right)^2\\right\\rceil=\\lceil2627.7\\rceil=2628$. С округлением вверх принимается $n_{\\min}=2629$ (курсовое значение; зависит от точности квантиля).",
+    explain: "$n_{\\min}=\\left\\lceil\\left(\\dfrac{z_{0.9}\\cdot\\sigma}{\\varepsilon}\\right)^2\\right\\rceil=\\left\\lceil\\left(\\dfrac{1.282\\cdot2}{0.05}\\right)^2\\right\\rceil=\\lceil2628.0\\rceil=2628$.",
   },
 
   // Q3: t-ДИ для МО, σ неизвестна
@@ -39,7 +39,7 @@ export const questions = [
       "$(-1.251\\pm0.411)$",
     ],
     correct: [0], multi: false,
-    explain: "Полуширина $\\delta=t_{0.95,24}\\cdot S/\\sqrt n=1.711\\cdot\\sqrt{3.677}/\\sqrt{25}=1.711\\cdot1.917/5\\approx0.670$. ДИ: $(-1.251-0.670;\\ -1.251+0.670)=(-1.921;\\ -0.581)$.",
+    explain: "Полуширина $\\delta=t_{0.95,24}\\cdot s_X/\\sqrt{n-1}=1.7109\\cdot\\sqrt{3.677}/\\sqrt{24}=1.7109\\cdot1.9175/4.899\\approx0.670$. ДИ: $(-1.251-0.670;\\ -1.251+0.670)=(-1.921;\\ -0.581)$.",
   },
 
   // Q4: chi2-ДИ для дисперсии, МО известно
@@ -214,8 +214,8 @@ export const flashcards = [
   },
   {
     id: "fc_ci_9", topic: "ci",
-    front: "Почему t-ДИ уже Z-ДИ при больших $n$?",
-    back: "$t_{1-\\alpha/2,n-1}\\to z_{1-\\alpha/2}$ и $S\\to\\sigma$ при $n\\to\\infty$ — ширины совпадают.",
+    front: "Почему t-ДИ шире Z-ДИ при конечном $n$?",
+    back: "При конечном $n$: $t_{1-\\alpha/2,n-1}>z_{1-\\alpha/2}$ (тяжёлые хвосты $t$-распределения) и $\\sigma$ оценивается по $S$ — оба фактора расширяют интервал. При $n\\to\\infty$: $t_{1-\\alpha/2,n-1}\\to z_{1-\\alpha/2}$ и $S\\to\\sigma$ — ширины совпадают.",
   },
   {
     id: "fc_ci_10", topic: "ci",
@@ -264,7 +264,7 @@ export const formulas = [
     name: "Минимальный объём выборки для доли",
     latex: "n=\\left\\lceil\\frac{z^2 p(1-p)}{\\varepsilon^2}\\right\\rceil\\;(\\text{повторная}),\\qquad n=\\left\\lceil\\frac{N z^2 p(1-p)}{N\\varepsilon^2+z^2 p(1-p)}\\right\\rceil\\;(\\text{бесповторная})",
     note: "При неизвестном $p$ подставляют $p=0.5$. Пример: $\\varepsilon=0.02$, $\\gamma=0.99$ $\\Rightarrow$ $n=4148$.",
-    figure: "ci_len_vs_n", figureCaption: "Длина ДИ vs n: отметка n_min=2629",
+    figure: "ci_len_vs_n", figureCaption: "Длина ДИ vs n: отметка n_min=2628",
   },
   {
     id: "fm_ci_7", topic: "ci",
@@ -276,6 +276,6 @@ export const formulas = [
     id: "fm_ci_8", topic: "ci",
     name: "Минимальный объём выборки для МО",
     latex: "n_{\\min}=\\left\\lceil\\left(\\frac{z_{1-\\alpha/2}\\cdot\\sigma}{\\varepsilon}\\right)^2\\right\\rceil",
-    note: "Пример: $\\sigma=2$, $\\gamma=0.8$ ($z_{0.9}=1.282$), $\\varepsilon=0.05$ $\\Rightarrow$ $n_{\\min}=2629$.",
+    note: "Пример: $\\sigma=2$, $\\gamma=0.8$ ($z_{0.9}=1.282$), $\\varepsilon=0.05$ $\\Rightarrow$ $n_{\\min}=2628$.",
   },
 ]

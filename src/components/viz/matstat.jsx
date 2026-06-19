@@ -117,18 +117,16 @@ function CLT() {
 // Слайдеры: n (1..100), Δ = μ₁ − μ₀ (0..2).
 // Рисует две нормальные кривые N(0, 1/√n) и N(Δ, 1/√n),
 // закрашивает α-хвост (правее c) и β-область (левее c под H₁).
-function stdNormCdf(z) {
-  // Апроксимация Φ(z) через встроенный erf (достаточно точна для визуализации).
-  return 0.5 * (1 + Math.erf(z / Math.SQRT2))
+// Аппроксимация функции ошибок (Abramowitz–Stegun 7.1.26). Локальная — не патчим Math.
+function erf(x) {
+  const t = 1 / (1 + 0.3275911 * Math.abs(x))
+  const poly = t * (0.254829592 + t * (-0.284496736 + t * (1.421413741 + t * (-1.453152027 + t * 1.061405429))))
+  const r = 1 - poly * Math.exp(-x * x)
+  return x >= 0 ? r : -r
 }
-// Polyfill Math.erf если нужен (modern browsers have it natively via Math.erf)
-if (typeof Math.erf === 'undefined') {
-  Math.erf = function (x) {
-    const t = 1 / (1 + 0.3275911 * Math.abs(x))
-    const poly = t * (0.254829592 + t * (-0.284496736 + t * (1.421413741 + t * (-1.453152027 + t * 1.061405429))))
-    const r = 1 - poly * Math.exp(-x * x)
-    return x >= 0 ? r : -r
-  }
+function stdNormCdf(z) {
+  // Φ(z) через erf (достаточно точна для визуализации).
+  return 0.5 * (1 + erf(z / Math.SQRT2))
 }
 
 function HtPower() {
