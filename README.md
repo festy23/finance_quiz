@@ -19,13 +19,28 @@
 3. (Опционально) добавить viz в `src/components/viz/` и подмешать в `src/components/viz/index.js`.
 Никаких изменений в БД-схеме не требуется — namespacing по `quiz_id` уже общий.
 
-Подробный план реализации: `docs/superpowers/plans/2026-06-18-multi-quiz-platform.md`.
+Подробные планы реализации — в `docs/superpowers/plans/` (мульти-квиз платформа и контент матстата).
+
+### Контент с формулами и графиками (квиз «matstat»)
+
+- **Формулы** рендерятся через KaTeX: пишите LaTeX как `$…$` (инлайн) или `$$…$$` (блок) прямо в полях `q`/`options`/`explain`/`front`/`back`/`latex`. Компоненты — `src/components/Tex.jsx` (`RichText`, `TexBlock`).
+- **Графики** — статичные SVG, предрендеренные из Python+matplotlib и закоммиченные в `public/figures/matstat/`. Вопрос/карточка/формула ссылается на график полем `figure: "<имя>"` (без `.svg`); компонент — `src/components/Figure.jsx`.
+- **Форматы контента** матстата: квиз-вопросы (`topics/<id>.js` → `questions`), флеш-карточки (`flashcards`, режим зубрёжки с самооценкой в localStorage), шпаргалка формул (`formulas`). Включаются фичами `features.{flashcards,formulas}` в манифесте.
+- Контент-банк проверяется тестом `test/matstat-content.test.js` (валидность тем, ключей ответов, рендер LaTeX, наличие SVG).
+
+Регенерация графиков (нужен Python 3):
+```bash
+cd scripts/figures
+python3 -m venv .venv && . .venv/bin/activate && pip install -r requirements.txt
+python build.py          # пересобирает все fig_*.py → public/figures/matstat/*.svg
+```
+SVG коммитятся в репозиторий, поэтому при деплое Python не нужен.
 
 ## Локальная разработка
 
 ```bash
 npm install
-npm test          # 13 тестов
+npm test          # unit-тесты (vitest)
 npm run build     # продакшен-сборка в dist/
 npm run dev       # фронтенд на :5173 (API — через vercel dev, см. ниже)
 ```
