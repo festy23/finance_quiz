@@ -16,6 +16,8 @@ export default function handler(req, res) {
     modes: q.modes,
     glossary: q.features.glossary ? q.glossary : [],
     tradetest: q.features.tradetest ? q.tradetest : [],
+    flashcards: q.features.flashcards ? (q.flashcards || []) : [],
+    formulas: q.features.formulas ? (q.formulas || []) : [],
     achievements: q.achievements,
   })
 }

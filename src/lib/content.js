@@ -3,6 +3,7 @@
 export const C = {
   quizId: null, brand: { name: "", sub: "" }, accent: "#3b76ff", features: {},
   topics: [], questions: [], modes: {}, glossary: [], tradetest: [], achievements: [],
+  flashcards: [], formulas: [],
 }
 
 export function initContent(data) {
@@ -16,4 +17,6 @@ export function initContent(data) {
   C.glossary = data.glossary || []
   C.tradetest = data.tradetest || []
   C.achievements = data.achievements || []
+  C.flashcards = data.flashcards || []
+  C.formulas = data.formulas || []
 }

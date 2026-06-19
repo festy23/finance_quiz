@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from 'react'
 import { I, Btn, TopicChip, Pbar, Ring } from '../components/ui.jsx'
 import { VIZ } from '../components/viz/index.js'
+import { RichText } from '../components/Tex.jsx'
+import { Figure } from '../components/Figure.jsx'
 import { C } from '../lib/content.js'
 import { QData, isCorrect } from '../lib/quiz.js'
 import { SectionTitle } from './Dashboard.jsx'
@@ -64,7 +66,7 @@ export function QuizScreen({ ctx }) {
             <Difficulty d={q.difficulty} />
             {q.multi && <span className="chip" style={{ background: "var(--ac-dim)", color: "var(--ac-hi)" }}>несколько ответов</span>}
           </div>
-          <h2 style={{ fontSize: 21, lineHeight: 1.35, letterSpacing: "-.01em", margin: "0 0 22px", textWrap: "pretty" }}>{q.q}</h2>
+          <h2 style={{ fontSize: 21, lineHeight: 1.35, letterSpacing: "-.01em", margin: "0 0 22px", textWrap: "pretty" }}><RichText text={q.q} /></h2>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {(q._order || q.options.map((_, k) => k)).map((oi, pos) => {
@@ -78,7 +80,7 @@ export function QuizScreen({ ctx }) {
               return (
                 <button key={oi} className={cls} onClick={() => choose(oi)}>
                   <span className="opt-key">{showReveal && correct ? <I.check size={14} /> : showReveal && chosen && !correct ? <I.x size={14} /> : String.fromCharCode(65 + pos)}</span>
-                  <span className="opt-txt">{opt}</span>
+                  <span className="opt-txt"><RichText text={opt} /></span>
                 </button>
               );
             })}
@@ -95,9 +97,10 @@ export function QuizScreen({ ctx }) {
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 7, fontWeight: 600, color: isCorrect(q, answers[q.id]) ? "var(--ok)" : "var(--bad)" }}>
                   {isCorrect(q, answers[q.id]) ? <><I.check size={16} />Верно</> : <><I.x size={16} />Неверно</>}
                 </div>
-                {q.explain}
+                <RichText text={q.explain} />
               </div>
               {VizComp && <VizComp />}
+              {q.figure && <Figure name={q.figure} caption={q.figureCaption} />}
             </div>
           )}
         </div>
@@ -189,11 +192,12 @@ function ReviewItem({ q, ans, open }) {
               const opt = q.options[oi];
               const correct = q.correct.includes(oi), chosen = (ans || []).includes(oi);
               let cls = "opt"; if (correct) cls += " correct"; else if (chosen) cls += " wrong"; else cls += " dim";
-              return <div key={oi} className={cls} style={{ cursor: "default", padding: "10px 13px" }}><span className="opt-key">{String.fromCharCode(65 + pos)}</span><span className="opt-txt" style={{ fontSize: 13.5 }}>{opt}</span></div>;
+              return <div key={oi} className={cls} style={{ cursor: "default", padding: "10px 13px" }}><span className="opt-key">{String.fromCharCode(65 + pos)}</span><span className="opt-txt" style={{ fontSize: 13.5 }}><RichText text={opt} /></span></div>;
             })}
           </div>
-          <div className="explain">{q.explain}</div>
+          <div className="explain"><RichText text={q.explain} /></div>
           {VizComp && <VizComp />}
+          {q.figure && <Figure name={q.figure} caption={q.figureCaption} />}
         </div>
       )}
     </div>
