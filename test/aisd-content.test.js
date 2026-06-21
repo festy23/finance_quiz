@@ -2,14 +2,14 @@ import { describe, it, expect } from 'vitest'
 import fs from 'node:fs'
 import path from 'node:path'
 import katex from 'katex'
-import { QUESTIONS, TOPICS } from '../api/_data/matstat/questions.js'
-import { FLASHCARDS } from '../api/_data/matstat/flashcards.js'
-import { FORMULAS } from '../api/_data/matstat/formulas.js'
-import { GLOSSARY } from '../api/_data/matstat/glossary.js'
+import { QUESTIONS, TOPICS } from '../api/_data/aisd/questions.js'
+import { FLASHCARDS } from '../api/_data/aisd/flashcards.js'
+import { FORMULAS } from '../api/_data/aisd/formulas.js'
+import { GLOSSARY } from '../api/_data/aisd/glossary.js'
 import { splitMath } from '../src/lib/mathtext.js'
 
 const TOPIC_IDS = new Set(TOPICS.map((t) => t.id))
-const FIG_DIR = path.resolve('public/figures/matstat')
+const FIG_DIR = path.resolve('public/figures/aisd')
 
 // Каждый сегмент-формула из строки должен рендериться KaTeX без выброса.
 function assertRenders(str, where) {
@@ -23,7 +23,7 @@ function figExists(name) {
   return fs.existsSync(path.join(FIG_DIR, name + '.svg'))
 }
 
-describe('matstat content bank', () => {
+describe('aisd content bank', () => {
   it('у каждого вопроса валидная тема, ключ ответа и рендеримый LaTeX', () => {
     for (const q of QUESTIONS) {
       expect(TOPIC_IDS.has(q.topic), `тема ${q.topic} у ${q.id}`).toBe(true)

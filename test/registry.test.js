@@ -34,4 +34,16 @@ describe('quiz registry', () => {
     expect(ms.questions.length).toBeGreaterThanOrEqual(5)
     expect(ms.glossary.length).toBeGreaterThanOrEqual(10)
   })
+
+  it('aisd зарегистрирован, флеш-карты и формулы включены, без tradetest', () => {
+    const list = listQuizzes()
+    expect(list.map((q) => q.id)).toContain('aisd')
+    const a = getQuiz('aisd')
+    expect(a.features.tradetest).toBe(false)
+    expect(a.features.flashcards).toBe(true)
+    expect(a.features.formulas).toBe(true)
+    expect(a.topics.map((t) => t.id)).toEqual(['graph', 'str', 'para'])
+    expect(a.questions.length).toBeGreaterThanOrEqual(5)
+    expect(a.achievements.length).toBeGreaterThan(0)
+  })
 })
