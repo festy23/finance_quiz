@@ -42,6 +42,7 @@ export const I = {
   brain:  (p)=><Ico {...p}><path d="M12 5a3 3 0 00-6 0 3 3 0 00-2 5 3 3 0 002 5 3 3 0 006 0V5z"/><path d="M12 5a3 3 0 016 0 3 3 0 012 5 3 3 0 01-2 5 3 3 0 01-6 0"/></Ico>,
   filter: (p)=><Ico {...p}><path d="M3 4h18l-7 8v6l-4 2v-8L3 4z"/></Ico>,
   star:   (p)=><Ico {...p}><path d="M12 2l2.9 6.3 6.8.8-5 4.6 1.4 6.8L12 17.8 5.9 20.5l1.4-6.8-5-4.6 6.8-.8L12 2z"/></Ico>,
+  graph:  (p)=><Ico {...p}><circle cx="6" cy="6" r="2.4"/><circle cx="18" cy="7" r="2.4"/><circle cx="7" cy="18" r="2.4"/><circle cx="18" cy="18" r="2.4"/><path d="M8.1 7.2l7.8.6M7.4 8.2l-.4 7.6M8.6 17.4l7.2.4M16.6 9l1 6.6"/></Ico>,
 };
 
 /* ---------- primitives ---------- */

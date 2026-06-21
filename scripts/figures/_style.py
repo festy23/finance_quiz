@@ -4,7 +4,8 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-OUT_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "public", "figures", "matstat")
+FIG_ROOT = os.path.join(os.path.dirname(__file__), "..", "..", "public", "figures")
+OUT_DIR = os.path.join(FIG_ROOT, "matstat")
 
 BG = "#0b0d12"
 PANEL = "#13151b"
@@ -31,10 +32,11 @@ plt.rcParams.update({
     "svg.fonttype": "path",  # текст как кривые — рендер одинаков без шрифтов
 })
 
-def save(fig, name):
-    """Сохранить fig в public/figures/matstat/<name>.svg."""
-    os.makedirs(OUT_DIR, exist_ok=True)
-    path = os.path.join(OUT_DIR, name + ".svg")
+def save(fig, name, quiz="matstat"):
+    """Сохранить fig в public/figures/<quiz>/<name>.svg."""
+    out_dir = os.path.join(FIG_ROOT, quiz)
+    os.makedirs(out_dir, exist_ok=True)
+    path = os.path.join(out_dir, name + ".svg")
     fig.tight_layout()
     fig.savefig(path, format="svg", bbox_inches="tight")
     plt.close(fig)
