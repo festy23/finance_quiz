@@ -6,6 +6,7 @@ import { QUESTIONS, TOPICS } from '../api/_data/aisd/questions.js'
 import { FLASHCARDS } from '../api/_data/aisd/flashcards.js'
 import { FORMULAS } from '../api/_data/aisd/formulas.js'
 import { GLOSSARY } from '../api/_data/aisd/glossary.js'
+import { TICKETS } from '../api/_data/aisd/tickets.js'
 import { splitMath } from '../src/lib/mathtext.js'
 
 const TOPIC_IDS = new Set(TOPICS.map((t) => t.id))
@@ -64,6 +65,26 @@ describe('aisd content bank', () => {
     for (const [name, arr] of [['Q', QUESTIONS], ['F', FLASHCARDS], ['FM', FORMULAS]]) {
       const ids = arr.map((x) => x.id)
       expect(new Set(ids).size, `дубли id в ${name}`).toBe(ids.length)
+    }
+  })
+
+  it('билеты (fast review): 15 штук, валидная схема, фигуры существуют', () => {
+    expect(TICKETS.length, 'ожидалось 15 билетов').toBe(15)
+    const ids = TICKETS.map((t) => t.id)
+    const refs = TICKETS.map((t) => t.ref)
+    expect(new Set(ids).size, 'дубли id билетов').toBe(ids.length)
+    expect(new Set(refs).size, 'дубли ref билетов').toBe(refs.length)
+    for (const t of TICKETS) {
+      expect(TOPIC_IDS.has(t.topic), `тема ${t.topic} у билета ${t.id}`).toBe(true)
+      expect(typeof t.title === 'string' && t.title.length > 0, `title у ${t.id}`).toBe(true)
+      expect(Array.isArray(t.blocks) && t.blocks.length > 0, `blocks у ${t.id}`).toBe(true)
+      for (const b of t.blocks) {
+        // блок — либо текст (body), либо преформатированный (pre), но не пусто
+        expect(b.body != null || b.pre != null, `пустой блок в ${t.id}`).toBe(true)
+      }
+      for (const f of t.figures || []) {
+        expect(figExists(f.name), `нет figure ${f.name} у билета ${t.id}`).toBe(true)
+      }
     }
   })
 })

@@ -42,7 +42,14 @@ describe('quiz registry', () => {
     expect(a.features.tradetest).toBe(false)
     expect(a.features.flashcards).toBe(true)
     expect(a.features.formulas).toBe(true)
-    expect(a.topics.map((t) => t.id)).toEqual(['graph', 'str', 'para'])
+    expect(a.features.tickets).toBe(true)
+    // 15 билетов = 15 тем (по одной на экзаменационный билет)
+    expect(a.topics.map((t) => t.id)).toEqual([
+      'floyd', 'flow', 'matching', 'coloring',
+      'exact', 'edit', 'aho', 'strsort', 'coding',
+      'greedy', 'dp', 'branch', 'approx', 'random', 'complexity',
+    ])
+    expect(a.topics.every((t) => t.group && t.short && t.name)).toBe(true)
     expect(a.questions.length).toBeGreaterThanOrEqual(5)
     expect(a.achievements.length).toBeGreaterThan(0)
   })

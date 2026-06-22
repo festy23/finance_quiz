@@ -3,7 +3,7 @@
 
 export const questions = [
   {
-    id: "cx1", topic: "para", difficulty: 2,
+    id: "cx1", topic: "complexity", difficulty: 2,
     q: "Что такое сведение (reduction) одной задачи к другой?",
     options: [
       "Преобразование входа $A$ в вход $B$ с сохранением ответа, позволяющее решить $A$ через решатель $B$",
@@ -15,7 +15,7 @@ export const questions = [
     explain: "Сведение $A\\le B$ отображает входы $A$ в входы $B$ с сохранением ответа. Если умеем решать $B$, то умеем и $A$. Это инструмент переноса как алгоритмов, так и доказательств сложности.",
   },
   {
-    id: "cx2", topic: "para", difficulty: 2,
+    id: "cx2", topic: "complexity", difficulty: 2,
     q: "Чем линейное сведение отличается от полиномиального?",
     options: [
       "Временем построения: линейное — за $O(n)$, полиномиальное — за произвольный полином от $n$",
@@ -27,7 +27,7 @@ export const questions = [
     explain: "Оба сохраняют ответ; разница в стоимости самого преобразования. Для теории NP-полноты достаточно полиномиальных сведений (полином композируется с полиномом).",
   },
   {
-    id: "cx3", topic: "para", difficulty: 2,
+    id: "cx3", topic: "complexity", difficulty: 2,
     q: "Если $A\\le_p B$ (полиномиально сводится) и $B\\in P$, то что можно сказать про $A$?",
     options: [
       "$A\\in P$",
@@ -39,7 +39,7 @@ export const questions = [
     explain: "Полиномиальное преобразование плюс полиномиальное решение $B$ дают полиномиальный алгоритм для $A$. Контрапозиция: если $A$ труднорешаема, то и $B$ труднорешаема.",
   },
   {
-    id: "cx4", topic: "para", difficulty: 2,
+    id: "cx4", topic: "complexity", difficulty: 2,
     figure: "cx_pnp", figureCaption: "Классы P, NP, NP-полные и NP-трудные (при $P\\ne NP$)",
     q: "Как соотносятся классы P и NP?",
     options: [
@@ -52,7 +52,7 @@ export const questions = [
     explain: "Любую задачу из P можно и решить, и проверить за полином, поэтому $P\\subseteq NP$. Совпадают ли они ($P=NP$) — главная открытая проблема теории сложности.",
   },
   {
-    id: "cx5", topic: "para", difficulty: 3,
+    id: "cx5", topic: "complexity", difficulty: 3,
     q: "Какая задача является NP-полной?",
     options: [
       "Задача, лежащая в NP и NP-трудная (к ней сводится любая задача из NP)",
@@ -64,7 +64,7 @@ export const questions = [
     explain: "NP-полнота = принадлежность NP + NP-трудность. Такие задачи — «самые трудные» в NP: полиномиальный алгоритм для одной из них дал бы $P=NP$.",
   },
   {
-    id: "cx6", topic: "para", difficulty: 2,
+    id: "cx6", topic: "complexity", difficulty: 2,
     q: "Что утверждает теорема Кука–Левина?",
     options: [
       "Задача выполнимости булевых формул (SAT) является NP-полной",
@@ -76,7 +76,7 @@ export const questions = [
     explain: "Кук и Левин показали, что SAT NP-полна — это первая доказанная NP-полная задача. От неё сведениями получают NP-полноту 3-SAT, клики, вершинного покрытия, гамильтонова цикла и др.",
   },
   {
-    id: "cx7", topic: "para", difficulty: 3,
+    id: "cx7", topic: "complexity", difficulty: 3,
     q: "Как доказать NP-полноту новой задачи $X$?",
     options: [
       "Показать $X\\in NP$ и свести к $X$ известную NP-полную задачу $Y\\le_p X$",
@@ -88,7 +88,7 @@ export const questions = [
     explain: "Стандартная схема: (1) $X\\in NP$ (есть полиномиально проверяемый сертификат); (2) $Y\\le_p X$ для известной NP-полной $Y$. Тогда $X$ не легче $Y$, то есть тоже NP-полна.",
   },
   {
-    id: "cx8", topic: "para", difficulty: 3,
+    id: "cx8", topic: "complexity", difficulty: 3,
     q: "Что такое неразрешимая (undecidable) задача, и каков канонический пример?",
     options: [
       "Задача без алгоритма-решателя на всех входах; канонический пример — проблема остановки",
@@ -100,7 +100,7 @@ export const questions = [
     explain: "Неразрешимость означает отсутствие алгоритма-решателя в принципе (а не просто медленного). Проблема остановки (определить, завершится ли программа на данном входе) неразрешима — доказано Тьюрингом диагональным аргументом.",
   },
   {
-    id: "cx9", topic: "para", difficulty: 2,
+    id: "cx9", topic: "complexity", difficulty: 2,
     q: "Чем NP-трудность отличается от NP-полноты?",
     options: [
       "NP-трудная задача не обязана лежать в NP; NP-полная — и NP-трудна, и принадлежит NP",
@@ -112,7 +112,7 @@ export const questions = [
     explain: "NP-трудность — «не легче всех задач NP» (любая NP сводится к ней), но сама задача может быть и вне NP (например оптимизационная или неразрешимая). NP-полнота добавляет требование принадлежности NP.",
   },
   {
-    id: "cx10", topic: "para", difficulty: 3, multi: true,
+    id: "cx10", topic: "complexity", difficulty: 3, multi: true,
     q: "Выберите ВСЕ верные утверждения теории сложности.",
     options: [
       "$A\\le_p B$ и $B\\in P$ влечёт $A\\in P$",
@@ -126,16 +126,16 @@ export const questions = [
 ]
 
 export const flashcards = [
-  { id: "cx_fc1", topic: "para", front: "Сведение (reduction)", back: "Преобразование входов $A$ в входы $B$ с сохранением ответа. $A\\le_p B$ — за полином." },
-  { id: "cx_fc2", topic: "para", front: "Свойство сведения", back: "$A\\le_p B$ и $B\\in P$ ⟹ $A\\in P$. Контрапозиция переносит труднорешаемость." },
-  { id: "cx_fc3", topic: "para", front: "P и NP", back: "P — решаемо за полином; NP — проверяемо за полином. $P\\subseteq NP$; $P=NP$ открыто." },
-  { id: "cx_fc4", topic: "para", front: "NP-полнота", back: "В NP + NP-трудна (любая NP сводится к ней). NP-трудность одна не требует принадлежности NP." },
-  { id: "cx_fc5", topic: "para", front: "Теорема Кука–Левина", back: "SAT NP-полна — первая NP-полная задача. От неё сводят остальные." },
-  { id: "cx_fc6", topic: "para", front: "Доказательство NP-полноты $X$", back: "(1) $X\\in NP$; (2) $Y\\le_p X$ для известной NP-полной $Y$." },
-  { id: "cx_fc7", topic: "para", front: "Неразрешимость", back: "Нет алгоритма, верного на всех входах. Пример — проблема остановки (Тьюринг)." },
+  { id: "cx_fc1", topic: "complexity", front: "Сведение (reduction)", back: "Преобразование входов $A$ в входы $B$ с сохранением ответа. $A\\le_p B$ — за полином." },
+  { id: "cx_fc2", topic: "complexity", front: "Свойство сведения", back: "$A\\le_p B$ и $B\\in P$ ⟹ $A\\in P$. Контрапозиция переносит труднорешаемость." },
+  { id: "cx_fc3", topic: "complexity", front: "P и NP", back: "P — решаемо за полином; NP — проверяемо за полином. $P\\subseteq NP$; $P=NP$ открыто." },
+  { id: "cx_fc4", topic: "complexity", front: "NP-полнота", back: "В NP + NP-трудна (любая NP сводится к ней). NP-трудность одна не требует принадлежности NP." },
+  { id: "cx_fc5", topic: "complexity", front: "Теорема Кука–Левина", back: "SAT NP-полна — первая NP-полная задача. От неё сводят остальные." },
+  { id: "cx_fc6", topic: "complexity", front: "Доказательство NP-полноты $X$", back: "(1) $X\\in NP$; (2) $Y\\le_p X$ для известной NP-полной $Y$." },
+  { id: "cx_fc7", topic: "complexity", front: "Неразрешимость", back: "Нет алгоритма, верного на всех входах. Пример — проблема остановки (Тьюринг)." },
 ]
 
 export const formulas = [
-  { id: "cx_f1", topic: "para", title: "Замкнутость P относительно сведения", latex: "A\\le_p B\\ \\wedge\\ B\\in P\\ \\Rightarrow\\ A\\in P", note: "Основа доказательств труднорешаемости." },
-  { id: "cx_f2", topic: "para", title: "NP-полнота", latex: "X\\in NPC\\iff X\\in NP\\ \\wedge\\ \\forall Y\\in NP:\\ Y\\le_p X", note: "Кук–Левин: $SAT\\in NPC$." },
+  { id: "cx_f1", topic: "complexity", title: "Замкнутость P относительно сведения", latex: "A\\le_p B\\ \\wedge\\ B\\in P\\ \\Rightarrow\\ A\\in P", note: "Основа доказательств труднорешаемости." },
+  { id: "cx_f2", topic: "complexity", title: "NP-полнота", latex: "X\\in NPC\\iff X\\in NP\\ \\wedge\\ \\forall Y\\in NP:\\ Y\\le_p X", note: "Кук–Левин: $SAT\\in NPC$." },
 ]

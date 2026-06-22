@@ -44,7 +44,7 @@ export function Dashboard({ ctx }) {
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", position: "relative" }}>
             <div>
               <div style={{ fontSize: 11, letterSpacing: ".08em", textTransform: "uppercase", color: "var(--tx-3)", fontWeight: 600 }}>Освоение курса</div>
-              <div style={{ fontSize: 13, color: "var(--tx-3)", marginTop: 6 }}>{C.questions.length} вопросов · {C.topics.length} блока · {lastSeen}</div>
+              <div style={{ fontSize: 13, color: "var(--tx-3)", marginTop: 6 }}>{C.questions.length} вопросов · {C.topics.length} билетов · {lastSeen}</div>
             </div>
             <span className="chip" style={{ background: "var(--ac-dim)", color: "var(--ac-hi)", border: "1px solid var(--ac-line)" }}>{overall}% готово</span>
           </div>

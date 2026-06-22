@@ -14,6 +14,7 @@ import { QuizScreen, ResultScreen } from './screens/Quiz.jsx'
 import { ProfileScreen } from './screens/Profile.jsx'
 import { FlashcardsScreen } from './screens/Flashcards.jsx'
 import { FormulasScreen } from './screens/Formulas.jsx'
+import { TicketsScreen } from './screens/Tickets.jsx'
 
 /* ---------- accent palette derived from any hex (works with white button text) ---------- */
 function hexToRgb(hex) {
@@ -150,6 +151,7 @@ export default function App({ quizId, initialUser, initialStore, onExitQuiz }) {
     glossary: { label: "Словарь", icon: "book" },
     flashcards: { label: "Карточки", icon: "layers" },
     formulas: { label: "Формулы", icon: "book" },
+    tickets: { label: "Билеты", icon: "spark" },
     progress: { label: "Прогресс", icon: "chart" },
     history: { label: "История", icon: "history" },
   };
@@ -157,11 +159,11 @@ export default function App({ quizId, initialUser, initialStore, onExitQuiz }) {
   const GROUPS = [
     { items: ["dashboard"] },
     { label: "Практика", items: ["modes", ...(feat.tradetest ? ["tradetest"] : [])] },
-    { label: "Материалы", items: ["learn", ...(feat.flashcards ? ["flashcards"] : []), ...(feat.formulas ? ["formulas"] : []), ...(feat.glossary ? ["glossary"] : [])] },
+    { label: "Материалы", items: ["learn", ...(feat.tickets ? ["tickets"] : []), ...(feat.flashcards ? ["flashcards"] : []), ...(feat.formulas ? ["formulas"] : []), ...(feat.glossary ? ["glossary"] : [])] },
     { label: "Статистика", items: ["progress", "history"] },
   ];
   const MOBILE_PRIMARY = ["dashboard", "modes", ...(feat.tradetest ? ["tradetest"] : []), "learn"].slice(0, 4);
-  const MOBILE_MORE = [...(feat.flashcards ? ["flashcards"] : []), ...(feat.formulas ? ["formulas"] : []), ...(feat.glossary ? ["glossary"] : []), "progress", "history"];
+  const MOBILE_MORE = [...(feat.tickets ? ["tickets"] : []), ...(feat.flashcards ? ["flashcards"] : []), ...(feat.formulas ? ["formulas"] : []), ...(feat.glossary ? ["glossary"] : []), "progress", "history"];
   const titleOf = { ...Object.fromEntries(Object.entries(NAVMAP).map(([k, v]) => [k, v.label])), result: "Результат", quiz: "Квиз", profile: "Профиль" };
 
   const renderScreen = () => {
@@ -173,6 +175,7 @@ export default function App({ quizId, initialUser, initialStore, onExitQuiz }) {
       case "learn": return <LearnScreen ctx={{ ...ctx, learnTopic }} />;
       case "flashcards": return <FlashcardsScreen ctx={ctx} />;
       case "formulas": return <FormulasScreen ctx={ctx} />;
+      case "tickets": return <TicketsScreen ctx={ctx} />;
       case "glossary": return <GlossaryScreen ctx={ctx} />;
       case "progress": return <ProgressScreen ctx={ctx} />;
       case "history": return <HistoryScreen ctx={ctx} />;

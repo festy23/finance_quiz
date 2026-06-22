@@ -18,6 +18,7 @@ export default function handler(req, res) {
     tradetest: q.features.tradetest ? q.tradetest : [],
     flashcards: q.features.flashcards ? (q.flashcards || []) : [],
     formulas: q.features.formulas ? (q.formulas || []) : [],
+    tickets: q.features.tickets ? (q.tickets || []) : [],
     achievements: q.achievements,
   })
 }

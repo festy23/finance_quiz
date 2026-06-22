@@ -4,7 +4,7 @@ export const AISD_ACHIEVEMENTS = [
   { id: "streak",  name: "В ритме",     desc: "Серия 3 дня",               icon: "flame",  color: "var(--down)",   rule: { kind: "streak", days: 3 } },
   { id: "perfect", name: "Без ошибок",  desc: "100% в сессии 5+",          icon: "target", color: "var(--ok)",     rule: { kind: "perfectSession", size: 5 } },
   { id: "thirty",  name: "Практик",     desc: "30 ответов",                icon: "layers", color: "var(--purple)", rule: { kind: "totalAnswered", n: 30 } },
-  { id: "grapher", name: "Графовик",    desc: "Графовые алгоритмы на 60%", icon: "graph",  color: "var(--ac)",     rule: { kind: "topicMastery", topic: "graph", pct: 60 } },
+  { id: "grapher", name: "Графовик",    desc: "Билет «Флойд–Уоршелл» на 60%", icon: "graph",  color: "var(--ac)",     rule: { kind: "topicMastery", topic: "floyd", pct: 60 } },
   { id: "scholar", name: "Эрудит",      desc: "Все разделы на 60%",        icon: "brain",  color: "var(--ac)",     rule: { kind: "allTopicsMastery", pct: 60 } },
   { id: "ace",     name: "Снайпер",     desc: "Точность 90%+",             icon: "star",   color: "var(--warn)",   rule: { kind: "accuracy", n: 10, pct: 90 } },
 ];

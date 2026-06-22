@@ -3,7 +3,7 @@
 export const C = {
   quizId: null, brand: { name: "", sub: "" }, accent: "#3b76ff", features: {},
   topics: [], questions: [], modes: {}, glossary: [], tradetest: [], achievements: [],
-  flashcards: [], formulas: [],
+  flashcards: [], formulas: [], tickets: [],
 }
 
 export function initContent(data) {
@@ -19,4 +19,5 @@ export function initContent(data) {
   C.achievements = data.achievements || []
   C.flashcards = data.flashcards || []
   C.formulas = data.formulas || []
+  C.tickets = data.tickets || []
 }

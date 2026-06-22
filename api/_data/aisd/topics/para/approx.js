@@ -3,7 +3,7 @@
 
 export const questions = [
   {
-    id: "ap1", topic: "para", difficulty: 2,
+    id: "ap1", topic: "approx", difficulty: 2,
     q: "Что такое коэффициент аппроксимации $\\rho$ приближённого алгоритма?",
     options: [
       "Граница отношения решения к оптимуму: $ALG\\le\\rho\\cdot OPT$ (мин.) или $ALG\\ge OPT/\\rho$ (макс.)",
@@ -15,7 +15,7 @@ export const questions = [
     explain: "$\\rho$ ограничивает, насколько решение может отклониться от оптимума в худшем случае. Чем ближе $\\rho$ к 1, тем качественнее приближение.",
   },
   {
-    id: "ap2", topic: "para", difficulty: 1,
+    id: "ap2", topic: "approx", difficulty: 1,
     q: "Зачем нужны приближённые алгоритмы?",
     options: [
       "Для NP-трудных задач они дают гарантированное приближение к оптимуму за полином",
@@ -27,7 +27,7 @@ export const questions = [
     explain: "Когда точное решение NP-трудно, приближённый алгоритм за полином даёт ответ с доказанной границей отклонения от оптимума — практичный компромисс между скоростью и качеством.",
   },
   {
-    id: "ap3", topic: "para", difficulty: 3,
+    id: "ap3", topic: "approx", difficulty: 3,
     figure: "ap_scheme", figureCaption: "Гарантия схемы аппроксимации: $ALG\\ge(1-\\varepsilon)\\,OPT$",
     q: "Что такое PTAS (Polynomial-Time Approximation Scheme)?",
     options: [
@@ -40,7 +40,7 @@ export const questions = [
     explain: "PTAS принимает $\\varepsilon$ и выдаёт решение в пределах множителя $(1+\\varepsilon)$ от оптимума. Время полиномиально по $n$ для каждого фиксированного $\\varepsilon$, но может расти как угодно по $1/\\varepsilon$ (например $n^{1/\\varepsilon}$).",
   },
   {
-    id: "ap4", topic: "para", difficulty: 3,
+    id: "ap4", topic: "approx", difficulty: 3,
     q: "Чем FPTAS сильнее PTAS?",
     options: [
       "FPTAS полиномиально по $n$ и по $1/\\varepsilon$ одновременно; у PTAS по $1/\\varepsilon$ может быть экспонента",
@@ -52,7 +52,7 @@ export const questions = [
     explain: "В FPTAS время полиномиально и по размеру входа $n$, и по $1/\\varepsilon$ (например $O(n^3/\\varepsilon)$). Это строго сильнее PTAS, где зависимость от $1/\\varepsilon$ может быть экспоненциальной.",
   },
   {
-    id: "ap5", topic: "para", difficulty: 3,
+    id: "ap5", topic: "approx", difficulty: 3,
     q: "Как устроен FPTAS для задачи о рюкзаке 0/1?",
     options: [
       "Ценности делятся на $K=\\varepsilon v_{\\max}/n$ и округляются, затем решается ДП за $O(n^3/\\varepsilon)$",
@@ -64,7 +64,7 @@ export const questions = [
     explain: "ДП по ценностям стоит $O(n^2 v_{\\max})$ — псевдополином. Округлив ценности с масштабом $K=\\varepsilon\\,v_{\\max}/n$, получаем решение не хуже $(1-\\varepsilon)\\,OPT$ (потеря $\\le\\varepsilon\\cdot OPT$) за время $O(n^3/\\varepsilon)$ — это FPTAS.",
   },
   {
-    id: "ap6", topic: "para", difficulty: 2,
+    id: "ap6", topic: "approx", difficulty: 2,
     q: "Какой коэффициент аппроксимации даёт классический жадный алгоритм для вершинного покрытия (брать оба конца непокрытого ребра)?",
     options: [
       "$2$ — решение не более чем вдвое больше оптимума",
@@ -76,7 +76,7 @@ export const questions = [
     explain: "Выбранные рёбра образуют паросочетание; в оптимальное покрытие входит хотя бы по одной вершине каждого, а алгоритм берёт обе — отсюда $|ALG|\\le2|OPT|$, то есть 2-приближение.",
   },
   {
-    id: "ap7", topic: "para", difficulty: 3,
+    id: "ap7", topic: "approx", difficulty: 3,
     q: "Какое утверждение о схемах аппроксимации НЕВЕРНО?",
     options: [
       "PTAS полиномиальна и по $n$, и по $1/\\varepsilon$ одновременно",
@@ -87,17 +87,54 @@ export const questions = [
     correct: [0], multi: false,
     explain: "Неверно первое: именно у FPTAS (а не PTAS) время полиномиально по $1/\\varepsilon$. В PTAS зависимость от $1/\\varepsilon$ может быть экспоненциальной.",
   },
+  {
+    id: "ap8", topic: "approx", difficulty: 3, multi: true,
+    q: "Выберите ВСЕ верные утверждения о FPTAS для рюкзака 0/1.",
+    options: [
+      "Ценности масштабируются с шагом $K=\\varepsilon\\,v_{\\max}/n$ и округляются вниз",
+      "Гарантируется $ALG\\ge(1-\\varepsilon)\\,OPT$, так как потеря $\\le n\\cdot K=\\varepsilon\\,v_{\\max}\\le\\varepsilon\\,OPT$",
+      "Время работы $O(n^3/\\varepsilon)$ полиномиально и по $n$, и по $1/\\varepsilon$",
+      "Схема находит точный оптимум при любом $\\varepsilon>0$ без какой-либо потери",
+    ],
+    correct: [0, 1, 2],
+    explain: "Первые три описывают конструкцию FPTAS: масштабирование $K=\\varepsilon v_{\\max}/n$, гарантия $(1-\\varepsilon)\\,OPT$ и время $O(n^3/\\varepsilon)$. Последнее неверно: округление вносит потерю $\\le\\varepsilon\\cdot OPT$, точного оптимума нет.",
+  },
+  {
+    id: "ap9", topic: "approx", difficulty: 3,
+    q: "При $\\varepsilon=0.1$ FPTAS для рюкзака гарантирует решение не хуже какой доли оптимума?",
+    options: [
+      "$\\ge90\\%$ оптимума, так как $ALG\\ge(1-\\varepsilon)\\,OPT=0.9\\,OPT$",
+      "$\\ge99\\%$ оптимума, так как гарантия равна $(1-\\varepsilon^2)\\,OPT$",
+      "$\\ge50\\%$ оптимума, как у простого жадного 2-приближения",
+      "Ровно $100\\%$ оптимума — FPTAS всегда точен независимо от $\\varepsilon$",
+    ],
+    correct: [0], multi: false,
+    explain: "Гарантия FPTAS — $ALG\\ge(1-\\varepsilon)\\,OPT$. При $\\varepsilon=0.1$ это $0.9\\,OPT$, то есть не хуже $90\\%$ оптимума. Уменьшая $\\varepsilon$ до $0.01$, получим $\\ge99\\%$ ценой роста времени.",
+  },
+  {
+    id: "ap10", topic: "approx", difficulty: 2,
+    q: "Почему для некоторых задач (например, общего метрического TSP) PTAS не существует при $P\\ne NP$?",
+    options: [
+      "Они APX-трудны: сколь угодно близкое приближение само было бы NP-трудным",
+      "Их оптимум всегда иррационален, поэтому округление принципиально невозможно",
+      "У них нет полиномиального алгоритма проверки сертификата, значит они вне NP",
+      "Их целевая функция не выпукла, что запрещает любые приближённые схемы",
+    ],
+    correct: [0], multi: false,
+    explain: "Для APX-трудных задач существует порог $\\rho>1$, ниже которого приближение само становится NP-трудным. Поэтому при $P\\ne NP$ они не допускают PTAS. Рюкзак — «лёгкий» случай, для него FPTAS есть.",
+  },
 ]
 
 export const flashcards = [
-  { id: "ap_fc1", topic: "para", front: "Коэффициент аппроксимации $\\rho$", back: "Минимизация: $ALG\\le\\rho\\cdot OPT$. Максимизация: $ALG\\ge OPT/\\rho$. Чем ближе к 1, тем лучше." },
-  { id: "ap_fc2", topic: "para", front: "PTAS", back: "$(1+\\varepsilon)$-приближение, полином по $n$ при фиксированном $\\varepsilon$. По $1/\\varepsilon$ может быть экспоненциально." },
-  { id: "ap_fc3", topic: "para", front: "FPTAS", back: "Полином и по $n$, и по $1/\\varepsilon$. Сильнее PTAS. Рюкзак имеет FPTAS ($O(n^3/\\varepsilon)$)." },
-  { id: "ap_fc4", topic: "para", front: "FPTAS для рюкзака", back: "Масштабирование и округление ценностей + ДП по ценностям. Потеря $\\le\\varepsilon\\cdot OPT$." },
-  { id: "ap_fc5", topic: "para", front: "Вершинное покрытие: 2-приближение", back: "Брать оба конца непокрытого ребра. Рёбра образуют паросочетание ⟹ $|ALG|\\le2|OPT|$." },
+  { id: "ap_fc1", topic: "approx", front: "Коэффициент аппроксимации $\\rho$", back: "Минимизация: $ALG\\le\\rho\\cdot OPT$. Максимизация: $ALG\\ge OPT/\\rho$. Чем ближе к 1, тем лучше." },
+  { id: "ap_fc2", topic: "approx", front: "PTAS", back: "$(1+\\varepsilon)$-приближение, полином по $n$ при фиксированном $\\varepsilon$. По $1/\\varepsilon$ может быть экспоненциально." },
+  { id: "ap_fc3", topic: "approx", front: "FPTAS", back: "Полином и по $n$, и по $1/\\varepsilon$. Сильнее PTAS. Рюкзак имеет FPTAS ($O(n^3/\\varepsilon)$)." },
+  { id: "ap_fc4", topic: "approx", front: "FPTAS для рюкзака", back: "Масштабирование и округление ценностей + ДП по ценностям. Потеря $\\le\\varepsilon\\cdot OPT$." },
+  { id: "ap_fc5", topic: "approx", front: "Вершинное покрытие: 2-приближение", back: "Брать оба конца непокрытого ребра. Рёбра образуют паросочетание ⟹ $|ALG|\\le2|OPT|$." },
+  { id: "ap_fc6", topic: "approx", front: "APX-трудность и предел PTAS", back: "Для APX-трудных задач (общий метрический TSP) при $P\\ne NP$ PTAS не существует — есть порог $\\rho>1$." },
 ]
 
 export const formulas = [
-  { id: "ap_f1", topic: "para", title: "Гарантия аппроксимации", latex: "ALG\\le(1+\\varepsilon)\\,OPT\\quad(\\text{минимизация})", note: "Схемы PTAS/FPTAS." },
-  { id: "ap_f2", topic: "para", title: "FPTAS для рюкзака", latex: "T=O\\!\\left(\\tfrac{n^3}{\\varepsilon}\\right)", note: "Полином по $n$ и $1/\\varepsilon$." },
+  { id: "ap_f1", topic: "approx", title: "Гарантия аппроксимации", latex: "ALG\\le(1+\\varepsilon)\\,OPT\\quad(\\text{минимизация})", note: "Схемы PTAS/FPTAS." },
+  { id: "ap_f2", topic: "approx", title: "FPTAS для рюкзака", latex: "T=O\\!\\left(\\tfrac{n^3}{\\varepsilon}\\right)", note: "Полином по $n$ и $1/\\varepsilon$." },
 ]
